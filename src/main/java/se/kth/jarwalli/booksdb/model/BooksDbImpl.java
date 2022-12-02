@@ -5,10 +5,7 @@
  */
 package se.kth.jarwalli.booksdb.model;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,10 +20,11 @@ import java.util.List;
  */
 public class BooksDbImpl implements BooksDbInterface {
 
-    private final List<Book> books;
+    private ArrayList<Book> result;
 
     public BooksDbImpl() {
-        books = Arrays.asList(DATA);
+        //books = Arrays.asList(DATA);
+        result = new ArrayList<>();
     }
 
     private Connection con = null;
@@ -61,26 +59,34 @@ public class BooksDbImpl implements BooksDbInterface {
         } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(),e);
         }
-
     }
 
     @Override
-    public List<Book> searchBooksByTitle(String searchTitle)
-            throws BooksDbException {
+    public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException, SQLException {
         // mock implementation
         // NB! Your implementation should select the books matching
         // the search string via a query to a database (not load all books from db)
-        List<Book> result = new ArrayList<>();
-        searchTitle = searchTitle.toLowerCase();
-        for (Book book : books) {
-            if (book.getTitle().toLowerCase().contains(searchTitle)) {
-                result.add(book);
-            }
+        Statement stmt = con.createStatement();
+
+        String sql = "SELECT * FROM Book WHERE title LIKE '%"+ searchTitle + "%'  ";
+        ResultSet resultSet = stmt.executeQuery(sql);
+
+        while (resultSet.next()) {
+            result.add(new Book(resultSet.getString("ISBN"),
+                    resultSet.getString("title"),
+                    resultSet.getDate("datePublished"),
+                    resultSet.getString("genre"),
+                    resultSet.getInt("rating")));
         }
-        return result;
+
+        ArrayList<Book> tmp = new ArrayList<>();
+        tmp = (ArrayList<Book>) result.clone();
+        result.clear();
+
+        return tmp;
     }
 
-    private static final Book[] DATA = {
+    /*private static final Book[] DATA = {
             new Book(1, "123456789", "Databases Illuminated", new Date(2018, 1, 1)),
             new Book(2, "234567891", "Dark Databases", new Date(1990, 1, 1)),
             new Book(3, "456789012", "The buried giant", new Date(2000, 1, 1)),
@@ -90,5 +96,5 @@ public class BooksDbImpl implements BooksDbInterface {
             new Book(7, "345678911", "The handmaids tale", new Date(2010, 1, 1)),
             new Book(8, "345678901", "Shuggie Bain", new Date(2020, 1, 1)),
             new Book(9, "345678912", "Microserfs", new Date(2000, 1, 1)),
-    };
+    };*/
 }

@@ -14,20 +14,36 @@ public class Book {
     private String title;
     private Date published;
     private String storyLine = "";
+    private String genre;
+    private int rating;
     // TODO: 
     // Add authors, as a separate class(!), and corresponding methods, to your implementation
     // as well, i.e. "private ArrayList<Author> authors;"
     
-    public Book(int bookId, String isbn, String title, Date published) {
+    public Book(String isbn, String title, Date published, String genre, int rating) {
+        this.isbn = isbn;
+        this.title = title;
+        this.published = published;
+        this.genre = genre;
+        this.rating = rating;
+    }
+
+    public Book(int bookId, String isbn, String title, Date published, String genre, int rating) {
         this.bookId = bookId;
         this.isbn = isbn;
         this.title = title;
         this.published = published;
+        this.genre = genre;
+        this.rating = rating;
     }
     
-    public Book(String isbn, String title, Date published) {
+    /*public Book(String isbn, String title, Date published) {
         this(-1, isbn, title, published); 
-    }
+    }*/
+
+
+
+
     
     public int getBookId() { return bookId; }
     public String getIsbn() { return isbn; }

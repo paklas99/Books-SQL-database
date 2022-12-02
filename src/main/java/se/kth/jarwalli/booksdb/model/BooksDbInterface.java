@@ -1,6 +1,7 @@
 package se.kth.jarwalli.booksdb.model;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -28,8 +29,10 @@ public interface BooksDbInterface {
     
     public void disconnect() throws BooksDbException;
     
-    public List<Book> searchBooksByTitle(String title) throws BooksDbException;
+    public List<Book> searchBooksByTitle(String title) throws BooksDbException, SQLException;
     
     // TODO: Add abstract methods for all inserts, deletes and queries 
     // mentioned in the instructions for the assignement.
+
+
 }

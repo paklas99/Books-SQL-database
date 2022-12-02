@@ -15,7 +15,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import se.kth.jarwalli.booksdb.model.Book;
-import se.kth.jarwalli.booksdb.model.BooksDbMockImpl;
+import se.kth.jarwalli.booksdb.model.BooksDbImpl;
 import se.kth.jarwalli.booksdb.model.SearchMode;
 
 
@@ -36,7 +36,7 @@ public class BooksPane extends VBox {
 
     private MenuBar menuBar;
 
-    public BooksPane(BooksDbMockImpl booksDb) {
+    public BooksPane(BooksDbImpl booksDb) {
         final Controller controller = new Controller(booksDb, this);
         this.init(controller);
     }
@@ -85,6 +85,8 @@ public class BooksPane extends VBox {
 
         this.getChildren().addAll(menuBar, mainPane);
         VBox.setVgrow(mainPane, Priority.ALWAYS);
+
+        addHandlers(controller);
     }
 
     private void initBooksTable() {
@@ -152,4 +154,33 @@ public class BooksPane extends VBox {
         menuBar = new MenuBar();
         menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu);
     }
+
+    private void addHandlers(Controller controller){
+        EventHandler<ActionEvent> connectHandler = new EventHandler<>(){
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(actionEvent.getSource() instanceof MenuItem){
+                    controller.handleConnection();
+
+                }
+            }
+        };
+        menuBar.getMenus().get(0).getItems().get(1).addEventHandler(ActionEvent.ACTION, connectHandler);
+
+        EventHandler<ActionEvent> disconnectHandler = new EventHandler<>(){
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(actionEvent.getSource() instanceof MenuItem){
+                    controller.handleDisconnect();
+
+                }
+            }
+        };
+        menuBar.getMenus().get(0).getItems().get(2).addEventHandler(ActionEvent.ACTION, disconnectHandler);
+
+    }
+
+
 }

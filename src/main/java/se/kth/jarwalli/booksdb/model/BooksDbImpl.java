@@ -5,7 +5,10 @@
  */
 package se.kth.jarwalli.booksdb.model;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,23 +21,47 @@ import java.util.List;
  *
  * @author anderslm@kth.se
  */
-public class BooksDbMockImpl implements BooksDbInterface {
+public class BooksDbImpl implements BooksDbInterface {
 
     private final List<Book> books;
 
-    public BooksDbMockImpl() {
+    public BooksDbImpl() {
         books = Arrays.asList(DATA);
     }
 
+    private Connection con = null;
+
     @Override
     public boolean connect(String database) throws BooksDbException {
-        // mock implementation
+        String user = "UserKTH"; // user name
+        String pwd = "mypassword"; // password
+        System.out.println(user + ", *********");
+        String server
+                = "jdbc:mysql://localhost:3306/" + database
+                + "?UseClientEnc=UTF8";
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection(server, user, pwd);
+            System.out.println("Connected!");
+        } catch (SQLException | ClassNotFoundException e){
+            throw new BooksDbException(e.getMessage(),e);
+        }
+
         return true;
     }
 
+
     @Override
     public void disconnect() throws BooksDbException {
-        // mock implementation
+        try {
+            if (con != null) {
+                con.close();
+                System.out.println("You have successfully disconnected");
+            }
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(),e);
+        }
+
     }
 
     @Override

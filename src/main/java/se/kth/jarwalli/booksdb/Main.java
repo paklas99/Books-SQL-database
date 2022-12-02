@@ -4,8 +4,12 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import se.kth.jarwalli.booksdb.model.BooksDbMockImpl;
+import se.kth.jarwalli.booksdb.model.BooksDbException;
+import se.kth.jarwalli.booksdb.model.BooksDbInterface;
+import se.kth.jarwalli.booksdb.model.BooksDbImpl;
 import se.kth.jarwalli.booksdb.view.BooksPane;
+
+import java.sql.SQLException;
 
 /**
  * Application start up.
@@ -15,9 +19,9 @@ import se.kth.jarwalli.booksdb.view.BooksPane;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws SQLException, ClassNotFoundException, BooksDbException {
 
-        BooksDbMockImpl booksDb = new BooksDbMockImpl(); // model
+        BooksDbImpl booksDb = new BooksDbImpl(); // model
         // Don't forget to connect to the db, somewhere...
 
         BooksPane root = new BooksPane(booksDb);

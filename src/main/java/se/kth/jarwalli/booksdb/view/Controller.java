@@ -1,9 +1,11 @@
 package se.kth.jarwalli.booksdb.view;
 
 import se.kth.jarwalli.booksdb.model.Book;
+import se.kth.jarwalli.booksdb.model.BooksDbException;
 import se.kth.jarwalli.booksdb.model.BooksDbInterface;
 import se.kth.jarwalli.booksdb.model.SearchMode;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,4 +61,22 @@ public class Controller {
 
     // TODO:
     // Add methods for all types of user interaction (e.g. via  menus).
+    void handleConnection() {
+        try {
+            booksDb.connect("Library");
+        } catch (BooksDbException e) {
+            System.out.println("caught!");
+            // TODO: add alert box
+        }
+    }
+
+    void handleDisconnect() {
+        try {
+            booksDb.disconnect();
+        } catch (BooksDbException e) {
+            // TODO: Add alert box
+        }
+    }
 }
+
+

@@ -22,13 +22,14 @@ public class Book {
     // Add authors, as a separate class(!), and corresponding methods, to your implementation
     // as well, i.e. "private ArrayList<Author> authors;"
     
-    public Book(String isbn, String title, Date published, String genre, int rating) {
+    public Book(String isbn, String title, Date published, String genre, int rating, String fullName) {
         this.isbn = isbn;
         this.title = title;
         this.published = published;
         this.genre = genre;
         this.rating = rating;
         authors = new ArrayList<>();
+        authors.add(new Author(fullName));
     }
 
     public Book(int bookId, String isbn, String title, Date published, String genre, int rating) {

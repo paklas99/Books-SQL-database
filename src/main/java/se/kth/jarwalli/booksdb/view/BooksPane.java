@@ -109,7 +109,7 @@ public class BooksPane extends VBox {
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         isbnCol.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         publishedCol.setCellValueFactory(new PropertyValueFactory<>("published"));
-        authorCol.setCellValueFactory(new PropertyValueFactory<>("authors"));
+        //authorCol.setCellValueFactory(new PropertyValueFactory<>(""));
         
         // associate the table view with the data
         booksTable.setItems(booksInTable);

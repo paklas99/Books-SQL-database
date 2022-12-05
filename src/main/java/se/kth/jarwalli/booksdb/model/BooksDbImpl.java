@@ -65,7 +65,9 @@ public class BooksDbImpl implements BooksDbInterface {
     public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException {
         ArrayList<Book> tmp = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM Book WHERE title LIKE ?";
+            String sql = "SELECT  *\n" +
+                    "FROM author JOIN book JOIN wrote\n" +
+                    "ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId WHERE title LIKE ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + searchTitle + "%");
             ResultSet pResultset = pstmt.executeQuery();
@@ -106,7 +108,8 @@ public class BooksDbImpl implements BooksDbInterface {
     public List<Book> searchBookByAuthor(String author) throws BooksDbException {
         ArrayList<Book> tmp;
         try {
-            String sql = "SELECT book.title, book.isbn, author.fullname, book.datePublished FROM author JOIN book JOIN wrote" +
+            String sql = "SELECT *" +
+                        " FROM author JOIN book JOIN wrote" +
                         "ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId" +
                         "WHERE author.fullName LIKE ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -130,8 +133,9 @@ public class BooksDbImpl implements BooksDbInterface {
                     pResultSet.getString("title"),
                     pResultSet.getDate("datePublished"),
                     pResultSet.getString("genre"),
-                    pResultSet.getInt("rating")));
-                    //pResultSet.getInt("authors");
+                    pResultSet.getInt("rating"),
+                    pResultSet.getString("fullname")));
+            System.out.println("test");
         }
     }
 

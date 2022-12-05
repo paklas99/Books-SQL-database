@@ -11,6 +11,10 @@ public class Author {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public Author(String fullName){
+        this(0, fullName, null);
+    }
+
     public int getAuthorId() {
         return authorId;
     }

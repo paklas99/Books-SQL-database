@@ -62,28 +62,77 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException, SQLException {
-        // mock implementation
-        // NB! Your implementation should select the books matching
-        // the search string via a query to a database (not load all books from db)
-        Statement stmt = con.createStatement();
+    public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException {
+        ArrayList<Book> tmp = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM Book WHERE title LIKE ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, "%" + searchTitle + "%");
+            ResultSet pResultset = pstmt.executeQuery();
 
-        String sql = "SELECT * FROM Book WHERE title LIKE '%"+ searchTitle + "%'  ";
-        ResultSet resultSet = stmt.executeQuery(sql);
+            retrieveBooks(pResultset);
 
-        while (resultSet.next()) {
-            result.add(new Book(resultSet.getString("ISBN"),
-                    resultSet.getString("title"),
-                    resultSet.getDate("datePublished"),
-                    resultSet.getString("genre"),
-                    resultSet.getInt("rating")));
+
+            tmp = (ArrayList<Book>) result.clone();
+            result.clear();
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
         }
 
+        return tmp;
+    }
+
+    @Override
+    public List<Book> searchBooksByISBN(String isbn) throws BooksDbException {
         ArrayList<Book> tmp = new ArrayList<>();
-        tmp = (ArrayList<Book>) result.clone();
-        result.clear();
+        try {
+            String sql = "SELECT * FROM Book WHERE isbn LIKE ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, "%" + isbn + "%");
+            ResultSet pResultset = pstmt.executeQuery();
+
+            retrieveBooks(pResultset);
+
+            tmp = (ArrayList<Book>) result.clone();
+            result.clear();
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+        }
 
         return tmp;
+    }
+
+    @Override
+    public List<Book> searchBookByAuthor(String author) throws BooksDbException {
+        ArrayList<Book> tmp;
+        try {
+            String sql = "SELECT book.title, book.isbn, author.fullname, book.datePublished FROM author JOIN book JOIN wrote" +
+                        "ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId" +
+                        "WHERE author.fullName LIKE ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, "%" + author + "%");
+            ResultSet pResultset = pstmt.executeQuery();
+
+            retrieveBooks(pResultset);
+
+            tmp = (ArrayList<Book>) result.clone();
+            result.clear();
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+        }
+
+        return tmp;
+    }
+
+    private void retrieveBooks(ResultSet pResultSet) throws SQLException {
+        while (pResultSet.next()) {
+            result.add(new Book(pResultSet.getString("ISBN"),
+                    pResultSet.getString("title"),
+                    pResultSet.getDate("datePublished"),
+                    pResultSet.getString("genre"),
+                    pResultSet.getInt("rating")));
+                    //pResultSet.getInt("authors");
+        }
     }
 
     /*private static final Book[] DATA = {

@@ -1,6 +1,7 @@
 package se.kth.jarwalli.booksdb.model;
 
 import java.sql.Date;
+import java.util.ArrayList;
 
 /**
  * Representation of a book.
@@ -13,6 +14,7 @@ public class Book {
     private String isbn; // should check format
     private String title;
     private Date published;
+    private ArrayList<Author> authors;
     private String storyLine = "";
     private String genre;
     private int rating;
@@ -26,6 +28,7 @@ public class Book {
         this.published = published;
         this.genre = genre;
         this.rating = rating;
+        authors = new ArrayList<>();
     }
 
     public Book(int bookId, String isbn, String title, Date published, String genre, int rating) {
@@ -35,6 +38,7 @@ public class Book {
         this.published = published;
         this.genre = genre;
         this.rating = rating;
+        authors = new ArrayList<>();
     }
     
     /*public Book(String isbn, String title, Date published) {

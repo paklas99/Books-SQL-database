@@ -5,6 +5,7 @@ import se.kth.jarwalli.booksdb.model.BooksDbException;
 import se.kth.jarwalli.booksdb.model.BooksDbInterface;
 import se.kth.jarwalli.booksdb.model.SearchMode;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +77,10 @@ public class Controller {
         } catch (BooksDbException e) {
             // TODO: Add alert box
         }
+    }
+
+    void handleAddBook(String isbn, String title, String published, String genre, int rating, String fullName){
+        booksDb.addBook(isbn, title, published, genre, rating, fullName);
     }
 }
 

@@ -184,6 +184,19 @@ public class BooksPane extends VBox {
         };
         menuBar.getMenus().get(0).getItems().get(2).addEventHandler(ActionEvent.ACTION, disconnectHandler);
 
+        EventHandler<ActionEvent> addBookHandler = new EventHandler<>(){
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(actionEvent.getSource() instanceof MenuItem){
+                    controller.handleAddBook();
+
+                }
+            }
+        };
+        menuBar.getMenus().get(0).getItems().get(2).addEventHandler(ActionEvent.ACTION, disconnectHandler);
+
+
     }
 
 

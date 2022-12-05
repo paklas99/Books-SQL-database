@@ -1,6 +1,7 @@
 package se.kth.jarwalli.booksdb.model;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -36,4 +37,6 @@ public interface BooksDbInterface {
 
     public List<Book> searchBooksByISBN(String isbn) throws SQLException, BooksDbException;
     public List<Book> searchBookByAuthor(String author) throws BooksDbException;
+
+    public Book addBook(String isbn, String title, String published, String genre, int rating, String fullName);
 }

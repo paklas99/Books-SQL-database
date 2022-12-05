@@ -126,7 +126,6 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     private void retrieveBooks(ResultSet pResultSet) throws SQLException {
-        System.out.println("test");
 
         while (pResultSet.next()) {
             result.add(new Book(pResultSet.getString("ISBN"),

@@ -2,6 +2,7 @@ package se.kth.jarwalli.booksdb.view;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,6 +36,7 @@ public class BooksPane extends VBox {
     private TextField searchField;
     private Button searchButton;
 
+
     private MenuBar menuBar;
 
     public BooksPane(BooksDbImpl booksDb) {
@@ -63,6 +65,15 @@ public class BooksPane extends VBox {
         // types: INFORMATION, WARNING et c.
         Alert alert = new Alert(type, msg);
         alert.showAndWait();
+    }
+
+    private String searchDialogs(String searchMode){
+        TextInputDialog searchDialog = new TextInputDialog();
+        searchDialog.setContentText("Enter a " + searchMode + " to");
+        searchDialog.setTitle("Search by " + searchMode);
+        searchDialog.setHeaderText("Search by " + searchMode);
+        Optional<String> result = searchDialog.showAndWait();
+        return result.get();
     }
 
     private void init(Controller controller) {
@@ -110,7 +121,7 @@ public class BooksPane extends VBox {
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         isbnCol.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         publishedCol.setCellValueFactory(new PropertyValueFactory<>("published"));
-        authorCol.setCellValueFactory(new PropertyValueFactory<Author, String>("fulltName"));
+        //authorCol.setCellValueFactory(new PropertyValueFactory<Author, String>("fulltName"));
         
         // associate the table view with the data
         booksTable.setItems(booksInTable);
@@ -135,6 +146,7 @@ public class BooksPane extends VBox {
         });
     }
 
+
     private void initMenus() {
 
         Menu fileMenu = new Menu("File");
@@ -149,6 +161,8 @@ public class BooksPane extends VBox {
         MenuItem authorItem = new MenuItem("Author");
         searchMenu.getItems().addAll(titleItem, isbnItem, authorItem);
 
+
+
         Menu manageMenu = new Menu("Manage");
         MenuItem addItem = new MenuItem("Add");
         MenuItem removeItem = new MenuItem("Remove");
@@ -160,6 +174,17 @@ public class BooksPane extends VBox {
     }
 
     private void addHandlers(Controller controller){
+        EventHandler<ActionEvent> menuSearchHandler = new EventHandler<>(){
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(actionEvent.getSource() instanceof MenuItem){
+                    String searchCriteria = searchDialogs("title");
+                    controller.onSearchSelected(searchCriteria, SearchMode.Title);
+                }
+            }
+        };
+        menuBar.getMenus().get(1).getItems().get(0).addEventHandler(ActionEvent.ACTION, menuSearchHandler);
         EventHandler<ActionEvent> connectHandler = new EventHandler<>(){
 
             @Override
@@ -189,7 +214,7 @@ public class BooksPane extends VBox {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if(actionEvent.getSource() instanceof MenuItem){
-                    controller.handleAddBook();
+                    //controller.handleAddBook();
 
                 }
             }

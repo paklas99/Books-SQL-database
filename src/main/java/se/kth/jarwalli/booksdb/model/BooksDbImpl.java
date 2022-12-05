@@ -125,6 +125,11 @@ public class BooksDbImpl implements BooksDbInterface {
         return tmp;
     }
 
+    @Override
+    public Book addBook(String isbn, String title, String published, String genre, int rating, String fullName) {
+        return null;
+    }
+
     private void retrieveBooks(ResultSet pResultSet) throws SQLException {
         System.out.println("test");
 

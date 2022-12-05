@@ -14,6 +14,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import se.kth.jarwalli.booksdb.model.Author;
 import se.kth.jarwalli.booksdb.model.Book;
 import se.kth.jarwalli.booksdb.model.BooksDbImpl;
 import se.kth.jarwalli.booksdb.model.SearchMode;
@@ -109,7 +110,7 @@ public class BooksPane extends VBox {
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         isbnCol.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         publishedCol.setCellValueFactory(new PropertyValueFactory<>("published"));
-        //authorCol.setCellValueFactory(new PropertyValueFactory<>(""));
+        authorCol.setCellValueFactory(new PropertyValueFactory<Author, String>("fulltName"));
         
         // associate the table view with the data
         booksTable.setItems(booksInTable);

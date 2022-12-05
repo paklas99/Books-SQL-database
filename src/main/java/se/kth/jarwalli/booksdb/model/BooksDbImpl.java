@@ -88,11 +88,12 @@ public class BooksDbImpl implements BooksDbInterface {
     public List<Book> searchBooksByISBN(String isbn) throws BooksDbException {
         ArrayList<Book> tmp = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM Book WHERE isbn LIKE ?";
+            String sql = "SELECT  * FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId WHERE wrote.isbn LIKE ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + isbn + "%");
+            System.out.println("innan");
             ResultSet pResultset = pstmt.executeQuery();
-
+            System.out.println("efter");
             retrieveBooks(pResultset);
 
             tmp = (ArrayList<Book>) result.clone();
@@ -108,10 +109,7 @@ public class BooksDbImpl implements BooksDbInterface {
     public List<Book> searchBookByAuthor(String author) throws BooksDbException {
         ArrayList<Book> tmp;
         try {
-            String sql = "SELECT *" +
-                        " FROM author JOIN book JOIN wrote" +
-                        "ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId" +
-                        "WHERE author.fullName LIKE ?";
+            String sql = "SELECT * FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId WHERE author.fullName LIKE ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + author + "%");
             ResultSet pResultset = pstmt.executeQuery();
@@ -128,6 +126,8 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     private void retrieveBooks(ResultSet pResultSet) throws SQLException {
+        System.out.println("test");
+
         while (pResultSet.next()) {
             result.add(new Book(pResultSet.getString("ISBN"),
                     pResultSet.getString("title"),
@@ -135,7 +135,6 @@ public class BooksDbImpl implements BooksDbInterface {
                     pResultSet.getString("genre"),
                     pResultSet.getInt("rating"),
                     pResultSet.getString("fullname")));
-            System.out.println("test");
         }
     }
 

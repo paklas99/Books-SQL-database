@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 /**
  * A mock implementation of the BooksDBInterface interface to demonstrate how to
  * use it together with the user interface.
@@ -128,24 +130,55 @@ public class BooksDbImpl implements BooksDbInterface {
 
     @Override
     public boolean addBook(String isbn, String title, String datePublished, String genre, int rating, String authors) throws BooksDbException {
-        String[] authorArray = authors.split(",", 0);
-        System.out.println("printa: isbn: " + isbn + ", title: " + title + ", date: " + datePublished + ", genre: " + genre + ", rating: " + rating + ", author: " + authors);
-
-        try {
-            String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?) ";
-            PreparedStatement pstmt = con.prepareStatement(sql);
+        String[] authorStringArray = authors.split(",", 0);
+        ArrayList<Integer> authorIdList = new ArrayList<>();
+        //System.out.println("printa: isbn: " + isbn + ", title: " + title + ", date: " + datePublished + ", genre: " + genre + ", rating: " + rating + ", author: " + authors);
+        // Step 1: Create Book
+        String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)){
             pstmt.setString(1, isbn);
             pstmt.setString(2, title);
             pstmt.setString(3, datePublished);
             pstmt.setString(4, genre);
             pstmt.setInt(5, rating);
             int n = pstmt.executeUpdate();
-            pstmt.close();
 
-            //String sql2 = "INSERT"
+
 
         } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(), e);
+        }
+        //System.out.println(authorArray[0]);
+
+        // Step 2: Create Author
+        String sql2 = "INSERT INTO Author VALUES(NULL, ?, NULL)";
+        for(int i=0; i< authorStringArray.length; i++){
+            try (PreparedStatement pstmt2 = con.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt2.setString(1, authorStringArray[i]);
+                pstmt2.executeUpdate();
+                ResultSet resultAuthorKey = pstmt2.getGeneratedKeys();
+                while (resultAuthorKey.next()){
+                    authorIdList.add(resultAuthorKey.getInt(1));
+                }
+                System.out.println("first");
+                System.out.println("lista" + authorIdList);
+
+            } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+            }
+        }
+
+        // Step 3: Connect Author with Book
+        String sql3 = "INSERT INTO Wrote VALUES(?, ?)";
+        for(int i=0; i<authorIdList.size(); i++){
+            try (PreparedStatement pstmt3 = con.prepareStatement(sql3)) {
+                pstmt3.setInt(1, authorIdList.get(i));
+                pstmt3.setString(2, isbn);
+                pstmt3.executeUpdate();
+
+            } catch (SQLException e) {
+                throw new BooksDbException(e.getMessage(), e);
+            }
         }
         //Book bookToAdd;
         //result.add(bookToAdd = new Book(isbn, title, datePublished, genre, rating));

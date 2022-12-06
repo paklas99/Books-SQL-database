@@ -22,14 +22,13 @@ public class Book {
     // Add authors, as a separate class(!), and corresponding methods, to your implementation
     // as well, i.e. "private ArrayList<Author> authors;"
     
-    public Book(String isbn, String title, Date published, String genre, int rating, String fullName) {
+    public Book(String isbn, String title, Date published, String genre, int rating) {
         this.isbn = isbn;
         this.title = title;
         this.published = published;
         this.genre = genre;
         this.rating = rating;
         authors = new ArrayList<>();
-        authors.add(new Author(fullName));
     }
 
     public Book(int bookId, String isbn, String title, Date published, String genre, int rating) {
@@ -55,6 +54,19 @@ public class Book {
     public String getTitle() { return title; }
     public Date getPublished() { return published; }
     public String getStoryLine() { return storyLine; }
+
+    public String getAuthors(){
+        String names = "";
+        for(int i=0; i<authors.size(); i++){
+            names += authors.get(i).getFullName();
+            if((i+1)< authors.size()) names +=", ";
+        }
+        return names;
+    }
+
+    public void addAuthor(String fullName){
+        authors.add(new Author(fullName));
+    }
     
     public void setStoryLine(String storyLine) {
         this.storyLine = storyLine;

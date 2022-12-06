@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import se.kth.jarwalli.booksdb.model.Author;
 import se.kth.jarwalli.booksdb.model.Book;
@@ -54,11 +55,11 @@ public class BooksPane extends VBox {
         booksInTable.clear();
         booksInTable.addAll(books);
     }
-    
+
     /**
      * Notify user on input error or exceptions.
-     * 
-     * @param msg the message
+     *
+     * @param msg  the message
      * @param type types: INFORMATION, WARNING et c.
      */
     protected void showAlertAndWait(String msg, Alert.AlertType type) {
@@ -67,28 +68,17 @@ public class BooksPane extends VBox {
         alert.showAndWait();
     }
 
-    private String searchDialogs(String searchMode){
+    private String searchDialogs(String searchMode) {
         TextInputDialog searchDialog = new TextInputDialog();
         searchDialog.setContentText("Enter a " + searchMode + " to");
         searchDialog.setTitle("Search by " + searchMode);
         searchDialog.setHeaderText("Search by " + searchMode);
         Optional<String> result = searchDialog.showAndWait();
         if (result.isEmpty()) System.out.println("Hola!");
-        if(result.isEmpty()) return null;
+        if (result.isEmpty()) return null;
         return result.get();
     }
 
-
-    private void InsertDialog(){
-        Stage stage = new Stage();
-        GridPane gridPane = new GridPane();
-        Scene scene = new Scene(gridPane);
-        stage.setScene(scene);
-        stage.showAndWait();
-
-
-
-    }
 
     private void init(Controller controller) {
 
@@ -137,7 +127,7 @@ public class BooksPane extends VBox {
         isbnCol.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         publishedCol.setCellValueFactory(new PropertyValueFactory<>("published"));
         authorCol.setCellValueFactory(new PropertyValueFactory<>("authors"));
-        
+
         // associate the table view with the data
         booksTable.setItems(booksInTable);
     }
@@ -149,7 +139,7 @@ public class BooksPane extends VBox {
         searchModeBox.getItems().addAll(SearchMode.values());
         searchModeBox.setValue(SearchMode.Title);
         searchButton = new Button("Search");
-        
+
         // event handling (dispatch to controller)
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -177,7 +167,6 @@ public class BooksPane extends VBox {
         searchMenu.getItems().addAll(titleItem, isbnItem, authorItem);
 
 
-
         Menu manageMenu = new Menu("Manage");
         MenuItem addItem = new MenuItem("Add");
         MenuItem removeItem = new MenuItem("Remove");
@@ -189,13 +178,12 @@ public class BooksPane extends VBox {
     }
 
 
-
-    private void addHandlers(Controller controller){
-        EventHandler<ActionEvent> menuSearchTitleHandler = new EventHandler<>(){
+    private void addHandlers(Controller controller) {
+        EventHandler<ActionEvent> menuSearchTitleHandler = new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent actionEvent) {
-                if(actionEvent.getSource() instanceof MenuItem){
+                if (actionEvent.getSource() instanceof MenuItem) {
                     String searchCriteria = searchDialogs("title");
                     controller.onSearchSelected(searchCriteria, SearchMode.Title);
                 }
@@ -203,11 +191,11 @@ public class BooksPane extends VBox {
         };
         menuBar.getMenus().get(1).getItems().get(0).addEventHandler(ActionEvent.ACTION, menuSearchTitleHandler);
 
-        EventHandler<ActionEvent> menuSearchIsbnHandler = new EventHandler<>(){
+        EventHandler<ActionEvent> menuSearchIsbnHandler = new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent actionEvent) {
-                if(actionEvent.getSource() instanceof MenuItem){
+                if (actionEvent.getSource() instanceof MenuItem) {
                     String searchCriteria = searchDialogs("isbn");
                     controller.onSearchSelected(searchCriteria, SearchMode.ISBN);
                 }
@@ -215,11 +203,11 @@ public class BooksPane extends VBox {
         };
         menuBar.getMenus().get(1).getItems().get(1).addEventHandler(ActionEvent.ACTION, menuSearchIsbnHandler);
 
-        EventHandler<ActionEvent> menuSearchAuthorHandler = new EventHandler<>(){
+        EventHandler<ActionEvent> menuSearchAuthorHandler = new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent actionEvent) {
-                if(actionEvent.getSource() instanceof MenuItem){
+                if (actionEvent.getSource() instanceof MenuItem) {
                     String searchCriteria = searchDialogs("author");
                     controller.onSearchSelected(searchCriteria, SearchMode.Author);
                 }
@@ -227,11 +215,11 @@ public class BooksPane extends VBox {
         };
         menuBar.getMenus().get(1).getItems().get(2).addEventHandler(ActionEvent.ACTION, menuSearchAuthorHandler);
 
-        EventHandler<ActionEvent> connectHandler = new EventHandler<>(){
+        EventHandler<ActionEvent> connectHandler = new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent actionEvent) {
-                if(actionEvent.getSource() instanceof MenuItem){
+                if (actionEvent.getSource() instanceof MenuItem) {
                     controller.handleConnection();
 
                 }
@@ -239,11 +227,11 @@ public class BooksPane extends VBox {
         };
         menuBar.getMenus().get(0).getItems().get(1).addEventHandler(ActionEvent.ACTION, connectHandler);
 
-        EventHandler<ActionEvent> disconnectHandler = new EventHandler<>(){
+        EventHandler<ActionEvent> disconnectHandler = new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent actionEvent) {
-                if(actionEvent.getSource() instanceof MenuItem){
+                if (actionEvent.getSource() instanceof MenuItem) {
                     controller.handleDisconnect();
 
                 }
@@ -251,20 +239,18 @@ public class BooksPane extends VBox {
         };
         menuBar.getMenus().get(0).getItems().get(2).addEventHandler(ActionEvent.ACTION, disconnectHandler);
 
-        EventHandler<ActionEvent> addBookHandler = new EventHandler<>(){
+        EventHandler<ActionEvent> menuAddBookHandler = new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent actionEvent) {
-                if(actionEvent.getSource() instanceof MenuItem){
-                    InsertDialog();
-                    //controller.handleAddBook();
+                if (actionEvent.getSource() instanceof MenuItem) {
+                    InsertDialog insertDialog = new InsertDialog();
+                    insertDialog.showDialog();
                 }
             }
         };
-        menuBar.getMenus().get(2).getItems().get(0).addEventHandler(ActionEvent.ACTION, addBookHandler);
+        menuBar.getMenus().get(2).getItems().get(0).addEventHandler(ActionEvent.ACTION, menuAddBookHandler);
 
 
     }
-
-
 }

@@ -127,8 +127,10 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public Book addBook(String isbn, String title, String published, String genre, int rating, String fullName) {
-        return null;
+    public Book addBook(String isbn, String title, String datePublished, String genre, int rating, String authors) {
+        Book bookToAdd;
+        result.add(bookToAdd = new Book(isbn, title, datePublished, genre, rating));
+        return bookToAdd;
     }
 
     private void retrieveBooks(ResultSet pResultSet) throws SQLException {
@@ -137,7 +139,7 @@ public class BooksDbImpl implements BooksDbInterface {
             Book tempBook;
             result.add(tempBook = new Book(pResultSet.getString("ISBN"),
                     pResultSet.getString("title"),
-                    pResultSet.getDate("datePublished"),
+                    pResultSet.getString("datePublished"),
                     pResultSet.getString("genre"),
                     pResultSet.getInt("rating")));
             String[] tempNames = pResultSet.getString("fullname").split(",", 0);

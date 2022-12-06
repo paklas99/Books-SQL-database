@@ -79,8 +79,8 @@ public class Controller {
         }
     }
 
-    void handleAddBook(String isbn, String title, String published, String genre, int rating, String fullName){
-        booksDb.addBook(isbn, title, published, genre, rating, fullName);
+    void handleAddBook(String isbn, String title, String published, String genre, int rating, String authors){
+        booksDb.addBook(isbn, title, published, genre, rating, authors);
     }
 }
 

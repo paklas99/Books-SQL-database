@@ -13,7 +13,7 @@ public class Book {
     private int bookId;
     private String isbn; // should check format
     private String title;
-    private Date published;
+    private String published;
     private ArrayList<Author> authors;
     private String storyLine = "";
     private String genre;
@@ -22,7 +22,7 @@ public class Book {
     // Add authors, as a separate class(!), and corresponding methods, to your implementation
     // as well, i.e. "private ArrayList<Author> authors;"
     
-    public Book(String isbn, String title, Date published, String genre, int rating) {
+    public Book(String isbn, String title, String published, String genre, int rating) {
         this.isbn = isbn;
         this.title = title;
         this.published = published;
@@ -31,7 +31,7 @@ public class Book {
         authors = new ArrayList<>();
     }
 
-    public Book(int bookId, String isbn, String title, Date published, String genre, int rating) {
+    public Book(int bookId, String isbn, String title, String published, String genre, int rating) {
         this.bookId = bookId;
         this.isbn = isbn;
         this.title = title;
@@ -52,7 +52,7 @@ public class Book {
     public int getBookId() { return bookId; }
     public String getIsbn() { return isbn; }
     public String getTitle() { return title; }
-    public Date getPublished() { return published; }
+    public String getPublished() { return published; }
     public String getStoryLine() { return storyLine; }
 
     public String getAuthors(){

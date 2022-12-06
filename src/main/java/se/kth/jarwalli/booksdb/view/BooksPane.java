@@ -37,6 +37,7 @@ public class BooksPane extends VBox {
     private TextField searchField;
     private Button searchButton;
 
+    private InsertDialog insertDialog;
 
     private MenuBar menuBar;
 
@@ -244,13 +245,26 @@ public class BooksPane extends VBox {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-                    InsertDialog insertDialog = new InsertDialog();
+                    insertDialog = new InsertDialog();
                     insertDialog.showDialog();
                 }
             }
         };
         menuBar.getMenus().get(2).getItems().get(0).addEventHandler(ActionEvent.ACTION, menuAddBookHandler);
 
+        EventHandler<ActionEvent> addBookHandler = new EventHandler<>() {
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (actionEvent.getSource() instanceof MenuItem) {
+                    insertDialog = new InsertDialog();
+                    insertDialog.showDialog();
+                    controller.handleAddBook(insertDialog.getIsbn(), insertDialog.getTitle(), insertDialog.getDatePublished(),
+                            insertDialog.getGenre(), insertDialog.getRating(), insertDialog.getAuthors());
+                }
+            }
+        };
+        //insertDialog.getOkButton().addEventHandler(ActionEvent.ACTION, addBookHandler);
 
     }
 }

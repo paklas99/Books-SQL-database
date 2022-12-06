@@ -80,7 +80,11 @@ public class Controller {
     }
 
     void handleAddBook(String isbn, String title, String published, String genre, int rating, String authors){
-        booksDb.addBook(isbn, title, published, genre, rating, authors);
+        try {
+            booksDb.addBook(isbn, title, published, genre, rating, authors);
+        }catch (BooksDbException e){
+            // TODO: add alert box
+        }
     }
 }
 

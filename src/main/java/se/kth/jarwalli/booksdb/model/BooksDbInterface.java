@@ -36,7 +36,7 @@ public interface BooksDbInterface {
     // mentioned in the instructions for the assignement.
 
     public List<Book> searchBooksByISBN(String isbn) throws SQLException, BooksDbException;
-    public List<Book> searchBookByAuthor(String author) throws BooksDbException;
+    public List<Book> searchBookByAuthor(String author) throws BooksDbException, SQLException;
 
-    public Book addBook(String isbn, String title, String published, String genre, int rating, String authors);
+    public boolean addBook(String isbn, String title, String published, String genre, int rating, String authors) throws BooksDbException;
 }

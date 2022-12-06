@@ -30,12 +30,12 @@ public class InsertDialog{
 
 
 
-    public InsertDialog() {
-        initDialog();
+    public InsertDialog(Controller controller) {
+        initDialog(controller);
     }
 
 
-    private void initDialog() {
+    private void initDialog(Controller controller) {
         stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
 
@@ -75,6 +75,8 @@ public class InsertDialog{
                 rating = parseInt(ratingTextField.getCharacters().toString());
                 datePublished = dateTextField.getCharacters().toString();
                 isbn = isbnTextField.getCharacters().toString();
+                controller.handleAddBook(isbn, title, datePublished, genre, rating, authors);
+
             }
         });
 

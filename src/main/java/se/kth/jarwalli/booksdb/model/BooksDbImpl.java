@@ -105,13 +105,14 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public List<Book> searchBookByAuthor(String author) throws BooksDbException {
+    public List<Book> searchBookByAuthor(String author) throws BooksDbException{
         ArrayList<Book> tmp;
+        PreparedStatement pstmt = null;
         try {
             String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
                         + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
                         + " GROUP BY book.isbn HAVING fullname LIKE ?";
-            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + author + "%");
             ResultSet pResultset = pstmt.executeQuery();
 
@@ -122,15 +123,39 @@ public class BooksDbImpl implements BooksDbInterface {
         } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
-
         return tmp;
     }
 
     @Override
-    public Book addBook(String isbn, String title, String datePublished, String genre, int rating, String authors) {
-        Book bookToAdd;
-        result.add(bookToAdd = new Book(isbn, title, datePublished, genre, rating));
-        return bookToAdd;
+    public boolean addBook(String isbn, String title, String datePublished, String genre, int rating, String authors) throws BooksDbException {
+        String[] authorArray = authors.split(",", 0);
+        System.out.println("printa: isbn: " + isbn + ", title: " + title + ", date: " + datePublished + ", genre: " + genre + ", rating: " + rating + ", author: " + authors);
+
+        try {
+            String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?) ";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, isbn);
+            pstmt.setString(2, title);
+            pstmt.setString(3, datePublished);
+            pstmt.setString(4, genre);
+            pstmt.setInt(5, rating);
+            int n = pstmt.executeUpdate();
+            pstmt.close();
+
+            //String sql2 = "INSERT"
+
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+        }
+        //Book bookToAdd;
+        //result.add(bookToAdd = new Book(isbn, title, datePublished, genre, rating));
+
+        //for(int i=0; i<authorArray.length; i++){
+        //    bookToAdd.addAuthor(authorArray[i]);
+        //}
+
+
+        return true;
     }
 
     private void retrieveBooks(ResultSet pResultSet) throws SQLException {

@@ -44,6 +44,7 @@ public class BooksPane extends VBox {
     public BooksPane(BooksDbImpl booksDb) {
         final Controller controller = new Controller(booksDb, this);
         this.init(controller);
+        insertDialog = new InsertDialog(controller);
     }
 
     /**
@@ -245,26 +246,24 @@ public class BooksPane extends VBox {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-                    insertDialog = new InsertDialog();
                     insertDialog.showDialog();
                 }
             }
         };
         menuBar.getMenus().get(2).getItems().get(0).addEventHandler(ActionEvent.ACTION, menuAddBookHandler);
 
-        EventHandler<ActionEvent> addBookHandler = new EventHandler<>() {
+/*        EventHandler<ActionEvent> addBookHandler = new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-                    insertDialog = new InsertDialog();
                     insertDialog.showDialog();
                     controller.handleAddBook(insertDialog.getIsbn(), insertDialog.getTitle(), insertDialog.getDatePublished(),
                             insertDialog.getGenre(), insertDialog.getRating(), insertDialog.getAuthors());
                 }
             }
         };
-        //insertDialog.getOkButton().addEventHandler(ActionEvent.ACTION, addBookHandler);
+        insertDialog.getOkButton().addEventHandler(ActionEvent.ACTION, addBookHandler);*/
 
     }
 }

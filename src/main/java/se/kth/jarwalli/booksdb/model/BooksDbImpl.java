@@ -65,13 +65,12 @@ public class BooksDbImpl implements BooksDbInterface {
     public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException {
         ArrayList<Book> tmp = new ArrayList<>();
         try {
-            String sql = "SELECT  *\n" +
-                    "FROM author JOIN book JOIN wrote\n" +
-                    "ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId WHERE title LIKE ?";
+            String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                        + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                        + " WHERE title LIKE ? GROUP BY book.isbn";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + searchTitle + "%");
             ResultSet pResultset = pstmt.executeQuery();
-
             retrieveBooks(pResultset);
 
 
@@ -88,12 +87,12 @@ public class BooksDbImpl implements BooksDbInterface {
     public List<Book> searchBooksByISBN(String isbn) throws BooksDbException {
         ArrayList<Book> tmp = new ArrayList<>();
         try {
-            String sql = "SELECT  * FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId WHERE wrote.isbn LIKE ?";
+            String sql = "SELECT  book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                        + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                        + " WHERE wrote.isbn LIKE ? GROUP BY book.isbn";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + isbn + "%");
-            System.out.println("innan");
             ResultSet pResultset = pstmt.executeQuery();
-            System.out.println("efter");
             retrieveBooks(pResultset);
 
             tmp = (ArrayList<Book>) result.clone();
@@ -109,7 +108,9 @@ public class BooksDbImpl implements BooksDbInterface {
     public List<Book> searchBookByAuthor(String author) throws BooksDbException {
         ArrayList<Book> tmp;
         try {
-            String sql = "SELECT * FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId WHERE author.fullName LIKE ?";
+            String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                        + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                        + " GROUP BY book.isbn HAVING fullname LIKE ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + author + "%");
             ResultSet pResultset = pstmt.executeQuery();
@@ -131,14 +132,18 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     private void retrieveBooks(ResultSet pResultSet) throws SQLException {
-
+        //System.out.println(pResultSet.getString("fullname"));
         while (pResultSet.next()) {
-            result.add(new Book(pResultSet.getString("ISBN"),
+            Book tempBook;
+            result.add(tempBook = new Book(pResultSet.getString("ISBN"),
                     pResultSet.getString("title"),
                     pResultSet.getDate("datePublished"),
                     pResultSet.getString("genre"),
-                    pResultSet.getInt("rating"),
-                    pResultSet.getString("fullname")));
+                    pResultSet.getInt("rating")));
+            String[] tempNames = pResultSet.getString("fullname").split(",", 0);
+            for(int i=0; i<tempNames.length; i++){
+                tempBook.addAuthor(tempNames[i]);
+            }
         }
     }
 

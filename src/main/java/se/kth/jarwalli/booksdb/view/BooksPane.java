@@ -115,13 +115,14 @@ public class BooksPane extends VBox {
         booksTable.getColumns().addAll(titleCol, isbnCol, publishedCol, authorCol);
         // give title column some extra space
         titleCol.prefWidthProperty().bind(booksTable.widthProperty().multiply(0.5));
+        authorCol.prefWidthProperty().bind(booksTable.widthProperty().multiply(0.3));
 
         // define how to fill data for each cell, 
         // get values from Book properties
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         isbnCol.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         publishedCol.setCellValueFactory(new PropertyValueFactory<>("published"));
-        //authorCol.setCellValueFactory(new PropertyValueFactory<Author, String>("fulltName"));
+        authorCol.setCellValueFactory(new PropertyValueFactory<>("authors"));
         
         // associate the table view with the data
         booksTable.setItems(booksInTable);

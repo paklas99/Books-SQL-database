@@ -86,6 +86,15 @@ public class Controller {
             // TODO: add alert box
         }
     }
+
+    void handleDeleteBook(String isbn){
+        try{
+            booksDb.deleteBook(isbn);
+        }catch (BooksDbException e){
+            // TODO
+        }
+    }
+
 }
 
 

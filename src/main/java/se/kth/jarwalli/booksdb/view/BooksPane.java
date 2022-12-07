@@ -252,6 +252,22 @@ public class BooksPane extends VBox {
         };
         menuBar.getMenus().get(2).getItems().get(0).addEventHandler(ActionEvent.ACTION, menuAddBookHandler);
 
+        EventHandler<ActionEvent> menuDeleteBookHandler = new EventHandler<>() {
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (actionEvent.getSource() instanceof MenuItem) {
+                    System.out.println("Hola Saba!");
+                    Book tempBook = booksTable.getSelectionModel().getSelectedItem();
+                    System.out.println(tempBook.getIsbn());
+                    controller.handleDeleteBook(tempBook.getIsbn());
+
+
+                }
+            }
+        };
+        menuBar.getMenus().get(2).getItems().get(1).addEventHandler(ActionEvent.ACTION, menuDeleteBookHandler);
+
 /*        EventHandler<ActionEvent> addBookHandler = new EventHandler<>() {
 
             @Override

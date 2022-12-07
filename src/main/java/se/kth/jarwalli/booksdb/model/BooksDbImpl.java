@@ -105,7 +105,7 @@ public class BooksDbImpl implements BooksDbInterface {
 
         return tmp;
     }
-
+    // TODO TRY with resources i alla sökfunktioner
     @Override
     public List<Book> searchBookByAuthor(String author) throws BooksDbException{
         ArrayList<Book> tmp;
@@ -129,13 +129,26 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
+    public boolean deleteBook(String isbn) throws BooksDbException {
+        String sql = "DELETE FROM Book WHERE isbn = ?";
+        try(PreparedStatement pstmt = con.prepareStatement(sql)){
+            pstmt.setString(1,isbn);
+            int n = pstmt.executeUpdate();
+        }
+        catch (SQLException e){
+            throw new BooksDbException(e.getMessage(), e);
+        }
+        return true;
+    }
+    @Override
     public boolean addBook(String isbn, String title, String datePublished, String genre, int rating, String authors) throws BooksDbException {
+        // TODO Possible to use one only PreparedStatement for all 3 steps and consequently one only try also?
         String[] authorStringArray = authors.split(",", 0);
         ArrayList<Integer> authorIdList = new ArrayList<>();
-        //System.out.println("printa: isbn: " + isbn + ", title: " + title + ", date: " + datePublished + ", genre: " + genre + ", rating: " + rating + ", author: " + authors);
         // Step 1: Create Book
         String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = con.prepareStatement(sql)){
+            //con.setAutoCommit(false);
             pstmt.setString(1, isbn);
             pstmt.setString(2, title);
             pstmt.setString(3, datePublished);
@@ -148,7 +161,6 @@ public class BooksDbImpl implements BooksDbInterface {
         } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
-        //System.out.println(authorArray[0]);
 
         // Step 2: Create Author
         String sql2 = "INSERT INTO Author VALUES(NULL, ?, NULL)";
@@ -180,14 +192,6 @@ public class BooksDbImpl implements BooksDbInterface {
                 throw new BooksDbException(e.getMessage(), e);
             }
         }
-        //Book bookToAdd;
-        //result.add(bookToAdd = new Book(isbn, title, datePublished, genre, rating));
-
-        //for(int i=0; i<authorArray.length; i++){
-        //    bookToAdd.addAuthor(authorArray[i]);
-        //}
-
-
         return true;
     }
 

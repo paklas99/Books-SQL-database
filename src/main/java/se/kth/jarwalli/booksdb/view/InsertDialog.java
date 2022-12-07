@@ -76,6 +76,13 @@ public class InsertDialog{
                 datePublished = dateTextField.getCharacters().toString();
                 isbn = isbnTextField.getCharacters().toString();
                 controller.handleAddBook(isbn, title, datePublished, genre, rating, authors);
+                stage.close();
+                titleTextField.clear();
+                authorTextField.clear();
+                genreTextField.clear();
+                ratingTextField.clear();
+                dateTextField.clear();
+                isbnTextField.clear();
 
             }
         });

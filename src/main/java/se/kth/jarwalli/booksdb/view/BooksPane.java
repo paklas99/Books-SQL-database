@@ -246,7 +246,7 @@ public class BooksPane extends VBox {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-                    insertDialog.showDialog();
+                    insertDialog.showDialog(controller.retrieveAllAuthors());
                 }
             }
         };
@@ -257,7 +257,6 @@ public class BooksPane extends VBox {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-                    System.out.println("Hola Saba!");
                     Book tempBook = booksTable.getSelectionModel().getSelectedItem();
                     System.out.println(tempBook.getIsbn());
                     controller.handleDeleteBook(tempBook.getIsbn());

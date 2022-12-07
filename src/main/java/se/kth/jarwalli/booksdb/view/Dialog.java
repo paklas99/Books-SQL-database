@@ -1,27 +1,19 @@
 package se.kth.jarwalli.booksdb.view;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
-import se.kth.jarwalli.booksdb.model.Author;
-
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 
 import static java.lang.Integer.parseInt;
 
-public class InsertDialog{
-
+public abstract class Dialog {
 
     private Stage stage;
 
@@ -33,14 +25,11 @@ public class InsertDialog{
     private int rating;
 
     private Button OkButton;
-    private Button addAuthorButton;
-    private ArrayList<Author> allAuthors;
-    private ComboBox authorsComboBox;
 
 
 
 
-    public InsertDialog(Controller controller) {
+    public Dialog(Controller controller) {
         initDialog(controller);
     }
 
@@ -48,6 +37,7 @@ public class InsertDialog{
     private void initDialog(Controller controller) {
         stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
+
         GridPane gridPane = new GridPane();
         Scene scene = new Scene(gridPane);
         stage.setTitle("Add new Book");
@@ -61,9 +51,6 @@ public class InsertDialog{
         TextField dateTextField = new TextField();
         TextField isbnTextField = new TextField();
         OkButton = new Button("OK");
-        addAuthorButton = new Button("Add Author");
-        authorsComboBox = new ComboBox<>();
-        ComboBox ratingComboBox = new ComboBox<>();
 
         gridPane.add(new Label("Book title"), 0,0);
         gridPane.add(titleTextField,1,0);
@@ -72,50 +59,12 @@ public class InsertDialog{
         gridPane.add(new Label("Genre"), 0,2 );
         gridPane.add(genreTextField,1,2);
         gridPane.add(new Label("Rating"), 0,3 );
-        gridPane.add(ratingComboBox, 1,3);
+        gridPane.add(ratingTextField,1,3);
         gridPane.add(new Label("Date Published"), 0,4 );
         gridPane.add(dateTextField,1,4);
         gridPane.add(new Label("ISBN"), 0,5 );
         gridPane.add(isbnTextField,1,5);
         gridPane.add(OkButton, 0,6);
-        gridPane.add(addAuthorButton, 2,1);
-        ArrayList<TextField> extraAuthors= new ArrayList<>();
-        gridPane.add(authorsComboBox, 0, 8);
-        ratingComboBox.getItems().addAll(FXCollections.observableArrayList(createStarslist()));
-        ratingComboBox.setPromptText("Choose Rating");
-        DatePicker datePicker = new DatePicker();
-        gridPane.add(datePicker, 0,9);final
-
-        StringConverter<LocalDate> defaultConverter = datePicker.getConverter();
-        datePicker.setConverter(new StringConverter<LocalDate>() {
-            @Override public String toString(LocalDate value) {
-                return defaultConverter.toString(value);
-            }
-
-            @Override public LocalDate fromString(String text) {
-                try {
-                    return defaultConverter.fromString(text);
-                } catch (DateTimeParseException ex) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING, "Please enter a date in the required format");
-                    alert.showAndWait();
-                }
-            return null;
-            }
-        });
-
-        //ratingComboBox.setEditable(true);
-
-
-        addAuthorButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                TextField t = new TextField();
-                extraAuthors.add(t);
-                gridPane.add(t,0,7+extraAuthors.size());
-                scene.getWindow().sizeToScene();
-                System.out.println(ratingComboBox.getValue());
-            }
-        });
         OkButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -141,27 +90,8 @@ public class InsertDialog{
 
     }
 
-    public void showDialog(ArrayList<String> allAuthorsString){
-        authorsComboBox.getItems().addAll(FXCollections.observableArrayList(allAuthorsString));
+    public void showDialog(){
         stage.showAndWait();
-    }
-
-    private ArrayList<String> createStarslist(){
-        ArrayList<String> stars = new ArrayList<>();
-        String tmp="";
-        for(int i=1; i<=10; i++){
-            tmp="";
-            for(int j=1; j<i; j++){
-                tmp+="★";
-                System.out.println("i: "+ i + ", j: " +j);
-            }
-            stars.add(tmp);
-        }
-        return stars;
-    }
-    private int starsToRating(String stars){
-
-        return 0;
     }
 
     public String getTitle() {

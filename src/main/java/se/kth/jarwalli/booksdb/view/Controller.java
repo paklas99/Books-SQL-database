@@ -1,9 +1,6 @@
 package se.kth.jarwalli.booksdb.view;
 
-import se.kth.jarwalli.booksdb.model.Book;
-import se.kth.jarwalli.booksdb.model.BooksDbException;
-import se.kth.jarwalli.booksdb.model.BooksDbInterface;
-import se.kth.jarwalli.booksdb.model.SearchMode;
+import se.kth.jarwalli.booksdb.model.*;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -93,6 +90,16 @@ public class Controller {
         }catch (BooksDbException e){
 
         }
+    }
+
+    ArrayList<String> retrieveAllAuthors(){
+        ArrayList<String> allAuthors= null;
+        try{
+            allAuthors = booksDb.retrieveAllAuthors();
+        }catch (BooksDbException e){
+            // TODO
+        }
+        return allAuthors;
     }
 
 }

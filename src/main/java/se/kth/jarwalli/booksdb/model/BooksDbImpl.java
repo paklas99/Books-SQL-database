@@ -64,6 +64,26 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
+    public ArrayList<String> retrieveAllAuthors() throws BooksDbException {
+        ArrayList<String> allAuthorsString = new ArrayList<>();
+        ArrayList <String> allAuthorsStringCopy;
+        try {
+            String sql = "SELECT authorId, fullname FROM author";
+            Statement stmt = con.createStatement();
+            ResultSet resultset = stmt.executeQuery(sql);
+
+            while (resultset.next()){
+                allAuthorsString.add(resultset.getString("fullName"));
+            }
+            allAuthorsStringCopy = (ArrayList<String>) allAuthorsString.clone();
+            allAuthorsString.clear();
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+        }
+      return allAuthorsStringCopy;
+    }
+
+    @Override
     public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException {
         ArrayList<Book> tmp = new ArrayList<>();
         try {

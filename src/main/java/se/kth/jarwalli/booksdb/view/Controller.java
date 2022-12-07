@@ -91,7 +91,7 @@ public class Controller {
         try{
             booksDb.deleteBook(isbn);
         }catch (BooksDbException e){
-            // TODO
+
         }
     }
 

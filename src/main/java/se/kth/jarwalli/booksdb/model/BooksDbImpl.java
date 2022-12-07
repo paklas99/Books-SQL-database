@@ -43,8 +43,8 @@ public class BooksDbImpl implements BooksDbInterface {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(server, user, pwd);
             System.out.println("Connected!");
-        } catch (SQLException | ClassNotFoundException e){
-            throw new BooksDbException(e.getMessage(),e);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new BooksDbException(e.getMessage(), e);
         }
 
         return true;
@@ -59,7 +59,7 @@ public class BooksDbImpl implements BooksDbInterface {
                 System.out.println("You have successfully disconnected");
             }
         } catch (SQLException e) {
-            throw new BooksDbException(e.getMessage(),e);
+            throw new BooksDbException(e.getMessage(), e);
         }
     }
 
@@ -68,8 +68,8 @@ public class BooksDbImpl implements BooksDbInterface {
         ArrayList<Book> tmp = new ArrayList<>();
         try {
             String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                        + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
-                        + " WHERE title LIKE ? GROUP BY book.isbn";
+                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                    + " WHERE title LIKE ? GROUP BY book.isbn";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + searchTitle + "%");
             ResultSet pResultset = pstmt.executeQuery();
@@ -90,8 +90,8 @@ public class BooksDbImpl implements BooksDbInterface {
         ArrayList<Book> tmp = new ArrayList<>();
         try {
             String sql = "SELECT  book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                        + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
-                        + " WHERE wrote.isbn LIKE ? GROUP BY book.isbn";
+                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                    + " WHERE wrote.isbn LIKE ? GROUP BY book.isbn";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + isbn + "%");
             ResultSet pResultset = pstmt.executeQuery();
@@ -105,15 +105,16 @@ public class BooksDbImpl implements BooksDbInterface {
 
         return tmp;
     }
+
     // TODO TRY with resources i alla sökfunktioner
     @Override
-    public List<Book> searchBookByAuthor(String author) throws BooksDbException{
+    public List<Book> searchBookByAuthor(String author) throws BooksDbException {
         ArrayList<Book> tmp;
         PreparedStatement pstmt = null;
         try {
             String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                        + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
-                        + " GROUP BY book.isbn HAVING fullname LIKE ?";
+                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                    + " GROUP BY book.isbn HAVING fullname LIKE ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + author + "%");
             ResultSet pResultset = pstmt.executeQuery();
@@ -131,15 +132,15 @@ public class BooksDbImpl implements BooksDbInterface {
     @Override
     public boolean deleteBook(String isbn) throws BooksDbException {
         String sql = "DELETE FROM Book WHERE isbn = ?";
-        try(PreparedStatement pstmt = con.prepareStatement(sql)){
-            pstmt.setString(1,isbn);
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, isbn);
             int n = pstmt.executeUpdate();
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
         return true;
     }
+
     @Override
     public boolean addBook(String isbn, String title, String datePublished, String genre, int rating, String authors) throws BooksDbException {
         // TODO Possible to use one only PreparedStatement for all 3 steps and consequently one only try also?
@@ -147,8 +148,10 @@ public class BooksDbImpl implements BooksDbInterface {
         ArrayList<Integer> authorIdList = new ArrayList<>();
         // Step 1: Create Book
         String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?)";
-        try (PreparedStatement pstmt = con.prepareStatement(sql)){
-            //con.setAutoCommit(false);
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = con.prepareStatement(sql);
+            con.setAutoCommit(false);
             pstmt.setString(1, isbn);
             pstmt.setString(2, title);
             pstmt.setString(3, datePublished);
@@ -156,38 +159,50 @@ public class BooksDbImpl implements BooksDbInterface {
             pstmt.setInt(5, rating);
             int n = pstmt.executeUpdate();
 
-
-
-        } catch (SQLException e) {
-            throw new BooksDbException(e.getMessage(), e);
-        }
-
-        // Step 2: Create Author
-        String sql2 = "INSERT INTO Author VALUES(NULL, ?, NULL)";
-        for(int i=0; i< authorStringArray.length; i++){
-            try (PreparedStatement pstmt2 = con.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
-                pstmt2.setString(1, authorStringArray[i]);
-                pstmt2.executeUpdate();
-                ResultSet resultAuthorKey = pstmt2.getGeneratedKeys();
-                while (resultAuthorKey.next()){
+            // Step 2: Create Author
+            String sql2 = "INSERT INTO Author VALUES(NULL, ?, NULL)";
+            for (int i = 0; i < authorStringArray.length; i++) {
+                pstmt = con.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
+                pstmt.setString(1, authorStringArray[i]);
+                pstmt.executeUpdate();
+                ResultSet resultAuthorKey = pstmt.getGeneratedKeys();
+                while (resultAuthorKey.next()) {
                     authorIdList.add(resultAuthorKey.getInt(1));
                 }
                 System.out.println("first");
                 System.out.println("lista" + authorIdList);
-
-            } catch (SQLException e) {
-            throw new BooksDbException(e.getMessage(), e);
             }
-        }
 
-        // Step 3: Connect Author with Book
-        String sql3 = "INSERT INTO Wrote VALUES(?, ?)";
-        for(int i=0; i<authorIdList.size(); i++){
-            try (PreparedStatement pstmt3 = con.prepareStatement(sql3)) {
-                pstmt3.setInt(1, authorIdList.get(i));
-                pstmt3.setString(2, isbn);
-                pstmt3.executeUpdate();
+            // Step 3: Connect Author with Book
+            String sql3 = "INSERT INTO Wrote VALUES(?, ?)";
+            for (int i = 0; i < authorIdList.size(); i++) {
+                pstmt = con.prepareStatement(sql3);
+                pstmt.setInt(1, authorIdList.get(i));
+                pstmt.setString(2, isbn);
+                pstmt.executeUpdate();
+            }
+            con.commit();
+        } catch (SQLException e) {
+            if(con!=null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    throw new BooksDbException(ex.getMessage(), ex);
+                }
+            }
+            throw new BooksDbException(e.getMessage(), e);
 
+        } finally {
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    throw new BooksDbException(e.getMessage(), e);
+                }
+
+            }
+            try {
+                con.setAutoCommit(true);
             } catch (SQLException e) {
                 throw new BooksDbException(e.getMessage(), e);
             }
@@ -205,7 +220,7 @@ public class BooksDbImpl implements BooksDbInterface {
                     pResultSet.getString("genre"),
                     pResultSet.getInt("rating")));
             String[] tempNames = pResultSet.getString("fullname").split(",", 0);
-            for(int i=0; i<tempNames.length; i++){
+            for (int i = 0; i < tempNames.length; i++) {
                 tempBook.addAuthor(tempNames[i]);
             }
         }

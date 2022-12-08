@@ -90,7 +90,7 @@ public class Controller {
     void handleDeleteBook(String isbn, String title){
         try{
             Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to delete " + title + " from the database?", CONFIRMATION);
-            if (result.get()== ButtonType.CANCEL){
+            if (result.isPresent() && result.get()== ButtonType.CANCEL){
                 return;
             }
             booksDb.deleteBook(isbn);

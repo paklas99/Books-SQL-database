@@ -66,7 +66,7 @@ public class InsertDialog{
         addAuthorButton = new Button("Add Author");
         authorsComboBox = new ComboBox<>();
         ComboBox ratingComboBox = new ComboBox<>();
-        ratingComboBox.getItems().addAll(FXCollections.observableArrayList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
+        ratingComboBox.getItems().addAll(FXCollections.observableArrayList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         ratingComboBox.setPromptText("Choose Rating");
         DatePicker datePicker = new DatePicker();
 
@@ -129,7 +129,8 @@ public class InsertDialog{
                 title = titleTextField.getCharacters().toString();
                 authors = authorTextField.getCharacters().toString();
                 genre = genreTextField.getCharacters().toString();
-                rating = parseInt((String) ratingComboBox.getValue());
+                // TODO check for NULLPointer Exception, when no rating is selected.
+                rating = (int) ratingComboBox.getValue();
                 datePublished = dateTextField.getCharacters().toString();
                 isbn = isbnTextField.getCharacters().toString();
                 controller.handleAddBook(isbn, title, datePublished, genre, rating, authors);

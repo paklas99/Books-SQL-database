@@ -54,6 +54,8 @@ public class InsertDialog{
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setVgap(5);
         gridPane.setHgap(5);
+
+        // Create nodes for the gridPane dialog:
         TextField titleTextField = new TextField();
         TextField authorTextField = new TextField();
         TextField genreTextField = new TextField();
@@ -64,7 +66,13 @@ public class InsertDialog{
         addAuthorButton = new Button("Add Author");
         authorsComboBox = new ComboBox<>();
         ComboBox ratingComboBox = new ComboBox<>();
+        ratingComboBox.getItems().addAll(FXCollections.observableArrayList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
+        ratingComboBox.setPromptText("Choose Rating");
+        DatePicker datePicker = new DatePicker();
 
+
+
+        //Add nodes to gridPane
         gridPane.add(new Label("Book title"), 0,0);
         gridPane.add(titleTextField,1,0);
         gridPane.add(new Label("Author"), 0,1 );
@@ -78,14 +86,12 @@ public class InsertDialog{
         gridPane.add(new Label("ISBN"), 0,5 );
         gridPane.add(isbnTextField,1,5);
         gridPane.add(OkButton, 0,6);
-        gridPane.add(addAuthorButton, 2,1);
-        ArrayList<TextField> extraAuthors= new ArrayList<>();
-        gridPane.add(authorsComboBox, 0, 8);
-        ratingComboBox.getItems().addAll(FXCollections.observableArrayList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
-        ratingComboBox.setPromptText("Choose Rating");
-        DatePicker datePicker = new DatePicker();
-        gridPane.add(datePicker, 0,9);final
+        //gridPane.add(datePicker, 0,9);
 
+
+        // Functionality:
+
+        // The following block catches an error that can happen if the datepicker gets a wrong date.
         StringConverter<LocalDate> defaultConverter = datePicker.getConverter();
         datePicker.setConverter(new StringConverter<LocalDate>() {
             @Override public String toString(LocalDate value) {
@@ -105,7 +111,7 @@ public class InsertDialog{
 
         //ratingComboBox.setEditable(true);
 
-
+/*
         addAuthorButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -115,7 +121,8 @@ public class InsertDialog{
                 scene.getWindow().sizeToScene();
                 System.out.println(ratingComboBox.getValue());
             }
-        });
+        });*/
+
         OkButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -130,7 +137,7 @@ public class InsertDialog{
                 titleTextField.clear();
                 authorTextField.clear();
                 genreTextField.clear();
-                ratingTextField.clear();
+                // Clear combo box??? ratingComboBox;
                 dateTextField.clear();
                 isbnTextField.clear();
 

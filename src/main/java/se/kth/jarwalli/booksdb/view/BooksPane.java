@@ -68,10 +68,11 @@ public class BooksPane extends VBox {
      * @param msg  the message
      * @param type types: INFORMATION, WARNING et c.
      */
-    protected void showAlertAndWait(String msg, Alert.AlertType type) {
+    protected Optional<ButtonType> showAlertAndWait(String msg, Alert.AlertType type) {
         // types: INFORMATION, WARNING et c.
         Alert alert = new Alert(type, msg);
-        alert.showAndWait();
+        Optional<ButtonType> result = alert.showAndWait();
+        return result;
     }
 
     private String searchDialogs(String searchMode) {
@@ -263,7 +264,7 @@ public class BooksPane extends VBox {
                 if (actionEvent.getSource() instanceof MenuItem) {
                     Book tempBook = booksTable.getSelectionModel().getSelectedItem();
                     System.out.println(tempBook.getIsbn());
-                    controller.handleDeleteBook(tempBook.getIsbn());
+                    controller.handleDeleteBook(tempBook.getIsbn(), tempBook.getTitle());
 
 
                 }

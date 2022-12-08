@@ -1,11 +1,14 @@
 package se.kth.jarwalli.booksdb.view;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import se.kth.jarwalli.booksdb.model.*;
 
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static javafx.scene.control.Alert.AlertType.*;
 
@@ -84,8 +87,12 @@ public class Controller {
         }
     }
 
-    void handleDeleteBook(String isbn){
+    void handleDeleteBook(String isbn, String title){
         try{
+            Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to delete " + title + " from the database?", CONFIRMATION);
+            if (result.get()== ButtonType.CANCEL){
+                return;
+            }
             booksDb.deleteBook(isbn);
             booksView.clearBooks();
         }catch (BooksDbException e){

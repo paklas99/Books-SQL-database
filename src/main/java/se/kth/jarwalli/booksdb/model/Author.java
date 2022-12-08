@@ -15,7 +15,6 @@ public class Author {
         this(0, fullName, null);
     }
 
-
     public int getAuthorId() {
         return authorId;
     }

@@ -81,7 +81,7 @@ public class InsertDialog{
         gridPane.add(addAuthorButton, 2,1);
         ArrayList<TextField> extraAuthors= new ArrayList<>();
         gridPane.add(authorsComboBox, 0, 8);
-        ratingComboBox.getItems().addAll(FXCollections.observableArrayList(createStarslist()));
+        ratingComboBox.getItems().addAll(FXCollections.observableArrayList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
         ratingComboBox.setPromptText("Choose Rating");
         DatePicker datePicker = new DatePicker();
         gridPane.add(datePicker, 0,9);final
@@ -122,7 +122,7 @@ public class InsertDialog{
                 title = titleTextField.getCharacters().toString();
                 authors = authorTextField.getCharacters().toString();
                 genre = genreTextField.getCharacters().toString();
-                rating = parseInt(ratingTextField.getCharacters().toString());
+                rating = parseInt((String) ratingComboBox.getValue());
                 datePublished = dateTextField.getCharacters().toString();
                 isbn = isbnTextField.getCharacters().toString();
                 controller.handleAddBook(isbn, title, datePublished, genre, rating, authors);
@@ -144,24 +144,6 @@ public class InsertDialog{
     public void showDialog(ArrayList<String> allAuthorsString){
         authorsComboBox.getItems().addAll(FXCollections.observableArrayList(allAuthorsString));
         stage.showAndWait();
-    }
-
-    private ArrayList<String> createStarslist(){
-        ArrayList<String> stars = new ArrayList<>();
-        String tmp="";
-        for(int i=1; i<=10; i++){
-            tmp="";
-            for(int j=1; j<i; j++){
-                tmp+="★";
-                System.out.println("i: "+ i + ", j: " +j);
-            }
-            stars.add(tmp);
-        }
-        return stars;
-    }
-    private int starsToRating(String stars){
-
-        return 0;
     }
 
     public String getTitle() {

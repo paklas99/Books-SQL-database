@@ -58,6 +58,10 @@ public class BooksPane extends VBox {
         booksInTable.addAll(books);
     }
 
+    public void clearBooks(){
+        booksInTable.clear();
+    }
+
     /**
      * Notify user on input error or exceptions.
      *

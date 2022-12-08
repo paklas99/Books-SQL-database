@@ -87,6 +87,7 @@ public class Controller {
     void handleDeleteBook(String isbn){
         try{
             booksDb.deleteBook(isbn);
+            booksView.clearBooks();
         }catch (BooksDbException e){
 
         }

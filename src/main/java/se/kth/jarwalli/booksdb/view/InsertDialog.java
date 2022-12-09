@@ -69,6 +69,9 @@ public class InsertDialog{
         ratingComboBox.getItems().addAll(FXCollections.observableArrayList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         ratingComboBox.setPromptText("Choose Rating");
         DatePicker datePicker = new DatePicker();
+        ComboBox genreComboBox = new ComboBox<>();
+        genreComboBox.setPromptText("Choose Genre");
+        genreComboBox.getItems().addAll(FXCollections.observableArrayList("Scary", "Comedy", "Horror", "Fantasy", "Drama", "Educational", "Novel", "Other"));
 
 
 
@@ -78,16 +81,16 @@ public class InsertDialog{
         gridPane.add(new Label("Author"), 0,1 );
         gridPane.add(authorTextField,1,1);
         gridPane.add(new Label("Genre"), 0,2 );
-        gridPane.add(genreTextField,1,2);
+        gridPane.add(genreComboBox, 1,2);
         gridPane.add(new Label("Rating"), 0,3 );
         gridPane.add(ratingComboBox, 1,3);
         gridPane.add(new Label("Date Published"), 0,4 );
-        gridPane.add(dateTextField,1,4);
+        gridPane.add(datePicker, 1,4);
         gridPane.add(new Label("ISBN"), 0,5 );
         gridPane.add(isbnTextField,1,5);
         gridPane.add(OkButton, 0,6);
-        gridPane.add(addAuthorButton,0,9);
-        //gridPane.add(datePicker, 0,9);
+        //gridPane.add(addAuthorButton,0,9);
+
 
 
         // Functionality:
@@ -130,9 +133,9 @@ public class InsertDialog{
             public void handle(ActionEvent actionEvent) {
                 title = titleTextField.getCharacters().toString();
                 authors = authorTextField.getCharacters().toString();
-                genre = genreTextField.getCharacters().toString();
+                genre = (String) genreComboBox.getValue();
                 rating = (int) ratingComboBox.getValue();
-                datePublished = dateTextField.getCharacters().toString();
+                datePublished = datePicker.getValue().toString();
                 isbn = isbnTextField.getCharacters().toString();
                 controller.handleAddBook(isbn, title, datePublished, genre, rating, authors);
                 stage.close();

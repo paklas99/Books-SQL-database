@@ -100,6 +100,18 @@ public class Controller {
         }
     }
 
+    void handleUpdateBook(int rating, String isbn){
+        try{
+            /*Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to update " + isbn + " from the database?", CONFIRMATION);
+            if (result.isPresent() && result.get()== ButtonType.CANCEL){
+                return;
+            }*/
+            booksDb.updateBook(rating, isbn);
+        }catch (BooksDbException e){
+
+        }
+    }
+
     ArrayList<String> retrieveAllAuthors(){
         ArrayList<String> allAuthors= null;
         try{

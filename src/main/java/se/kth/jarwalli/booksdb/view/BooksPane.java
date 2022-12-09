@@ -38,6 +38,7 @@ public class BooksPane extends VBox {
     private Button searchButton;
 
     private InsertDialog insertDialog;
+    private UpdateDialog updateDialog;
 
     private MenuBar menuBar;
 
@@ -45,6 +46,7 @@ public class BooksPane extends VBox {
         final Controller controller = new Controller(booksDb, this);
         this.init(controller);
         insertDialog = new InsertDialog(controller);
+        updateDialog = new UpdateDialog(controller);
     }
 
     /**
@@ -271,6 +273,20 @@ public class BooksPane extends VBox {
             }
         };
         menuBar.getMenus().get(2).getItems().get(1).addEventHandler(ActionEvent.ACTION, menuDeleteBookHandler);
+
+        EventHandler<ActionEvent> menuUpdateBookHandler = new EventHandler<>() {
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (actionEvent.getSource() instanceof MenuItem) {
+                    Book tempBook = booksTable.getSelectionModel().getSelectedItem();
+                    controller.handleUpdateBook(tempBook.getRating(), tempBook.getIsbn());
+                    updateDialog.showUpdateDialog();
+
+                }
+            }
+        };
+        menuBar.getMenus().get(2).getItems().get(2).addEventHandler(ActionEvent.ACTION, menuUpdateBookHandler);
 
 /*        EventHandler<ActionEvent> addBookHandler = new EventHandler<>() {
 

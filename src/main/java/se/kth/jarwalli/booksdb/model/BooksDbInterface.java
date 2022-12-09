@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,7 +37,9 @@ public interface BooksDbInterface {
     // mentioned in the instructions for the assignement.
 
     public List<Book> searchBooksByISBN(String isbn) throws SQLException, BooksDbException;
-    public List<Book> searchBookByAuthor(String author) throws BooksDbException;
+    public List<Book> searchBookByAuthor(String author) throws BooksDbException, SQLException;
 
-    public Book addBook(String isbn, String title, String published, String genre, int rating, String authors);
+    public boolean addBook(String isbn, String title, String published, String genre, int rating, String authors) throws BooksDbException;
+    public boolean deleteBook(String isbn) throws BooksDbException;
+    public ArrayList<String> retrieveAllAuthors() throws BooksDbException;
 }

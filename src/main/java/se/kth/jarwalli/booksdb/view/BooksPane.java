@@ -44,6 +44,7 @@ public class BooksPane extends VBox {
     public BooksPane(BooksDbImpl booksDb) {
         final Controller controller = new Controller(booksDb, this);
         this.init(controller);
+        insertDialog = new InsertDialog(controller);
     }
 
     /**
@@ -57,16 +58,21 @@ public class BooksPane extends VBox {
         booksInTable.addAll(books);
     }
 
+    public void clearBooks(){
+        booksInTable.clear();
+    }
+
     /**
      * Notify user on input error or exceptions.
      *
      * @param msg  the message
      * @param type types: INFORMATION, WARNING et c.
      */
-    protected void showAlertAndWait(String msg, Alert.AlertType type) {
+    protected Optional<ButtonType> showAlertAndWait(String msg, Alert.AlertType type) {
         // types: INFORMATION, WARNING et c.
         Alert alert = new Alert(type, msg);
-        alert.showAndWait();
+        Optional<ButtonType> result = alert.showAndWait();
+        return result;
     }
 
     private String searchDialogs(String searchMode) {
@@ -245,26 +251,39 @@ public class BooksPane extends VBox {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-                    insertDialog = new InsertDialog();
-                    insertDialog.showDialog();
+                    insertDialog.showDialog(controller.retrieveAllAuthors());
                 }
             }
         };
         menuBar.getMenus().get(2).getItems().get(0).addEventHandler(ActionEvent.ACTION, menuAddBookHandler);
 
-        EventHandler<ActionEvent> addBookHandler = new EventHandler<>() {
+        EventHandler<ActionEvent> menuDeleteBookHandler = new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-                    insertDialog = new InsertDialog();
+                    Book tempBook = booksTable.getSelectionModel().getSelectedItem();
+                    System.out.println(tempBook.getIsbn());
+                    controller.handleDeleteBook(tempBook.getIsbn(), tempBook.getTitle());
+
+
+                }
+            }
+        };
+        menuBar.getMenus().get(2).getItems().get(1).addEventHandler(ActionEvent.ACTION, menuDeleteBookHandler);
+
+/*        EventHandler<ActionEvent> addBookHandler = new EventHandler<>() {
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (actionEvent.getSource() instanceof MenuItem) {
                     insertDialog.showDialog();
                     controller.handleAddBook(insertDialog.getIsbn(), insertDialog.getTitle(), insertDialog.getDatePublished(),
                             insertDialog.getGenre(), insertDialog.getRating(), insertDialog.getAuthors());
                 }
             }
         };
-        //insertDialog.getOkButton().addEventHandler(ActionEvent.ACTION, addBookHandler);
+        insertDialog.getOkButton().addEventHandler(ActionEvent.ACTION, addBookHandler);*/
 
     }
 }

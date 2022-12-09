@@ -22,7 +22,11 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws SQLException, ClassNotFoundException, BooksDbException {
 
         BooksDbImpl booksDb = new BooksDbImpl(); // model
+        // TODO delete this connection härnere !!!!!!!!
+        booksDb.connect("Library");
+
         // Don't forget to connect to the db, somewhere...
+
 
         BooksPane root = new BooksPane(booksDb);
 

@@ -86,6 +86,7 @@ public class InsertDialog{
         gridPane.add(new Label("ISBN"), 0,5 );
         gridPane.add(isbnTextField,1,5);
         gridPane.add(OkButton, 0,6);
+        gridPane.add(addAuthorButton,0,9);
         //gridPane.add(datePicker, 0,9);
 
 
@@ -111,17 +112,18 @@ public class InsertDialog{
 
         //ratingComboBox.setEditable(true);
 
-/*
+
         addAuthorButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                TextField t = new TextField();
+
+/*                TextField t = new TextField();
                 extraAuthors.add(t);
                 gridPane.add(t,0,7+extraAuthors.size());
                 scene.getWindow().sizeToScene();
-                System.out.println(ratingComboBox.getValue());
+                System.out.println(ratingComboBox.getValue());*/
             }
-        });*/
+        });
 
         OkButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -129,7 +131,6 @@ public class InsertDialog{
                 title = titleTextField.getCharacters().toString();
                 authors = authorTextField.getCharacters().toString();
                 genre = genreTextField.getCharacters().toString();
-                // TODO check for NULLPointer Exception, when no rating is selected.
                 rating = (int) ratingComboBox.getValue();
                 datePublished = dateTextField.getCharacters().toString();
                 isbn = isbnTextField.getCharacters().toString();
@@ -138,7 +139,7 @@ public class InsertDialog{
                 titleTextField.clear();
                 authorTextField.clear();
                 genreTextField.clear();
-                // Clear combo box??? ratingComboBox;
+                ratingComboBox.getSelectionModel().clearSelection();
                 dateTextField.clear();
                 isbnTextField.clear();
 

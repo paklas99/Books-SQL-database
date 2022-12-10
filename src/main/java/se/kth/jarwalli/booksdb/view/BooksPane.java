@@ -39,6 +39,7 @@ public class BooksPane extends VBox {
 
     private InsertDialog insertDialog;
     private UpdateDialog updateDialog;
+    private LoginDialog loginDialog;
 
     private MenuBar menuBar;
 
@@ -47,6 +48,7 @@ public class BooksPane extends VBox {
         this.init(controller);
         insertDialog = new InsertDialog(controller);
         updateDialog = new UpdateDialog(controller);
+        loginDialog = new LoginDialog(controller);
     }
 
     /**
@@ -184,8 +186,13 @@ public class BooksPane extends VBox {
         MenuItem updateItem = new MenuItem("Update");
         manageMenu.getItems().addAll(addItem, removeItem, updateItem);
 
+        Menu authenticationMenu = new Menu("Authentication");
+        MenuItem login = new MenuItem("login");
+        authenticationMenu.getItems().addAll(login);
+
+
         menuBar = new MenuBar();
-        menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu);
+        menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu, authenticationMenu);
     }
 
 
@@ -319,6 +326,17 @@ public class BooksPane extends VBox {
             }
         };
         menuBar.getMenus().get(2).getItems().get(2).addEventHandler(ActionEvent.ACTION, menuUpdateBookHandler);
+
+        EventHandler<ActionEvent> menuLoginHandler = new EventHandler<>() {
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (actionEvent.getSource() instanceof MenuItem) {
+                    loginDialog.showLoginDialog();
+                }
+            }
+        };
+        menuBar.getMenus().get(3).getItems().get(0).addEventHandler(ActionEvent.ACTION, menuLoginHandler);
 
 /*        EventHandler<ActionEvent> addBookHandler = new EventHandler<>() {
 

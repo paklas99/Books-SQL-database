@@ -54,6 +54,7 @@ public class Book {
     public String getTitle() { return title; }
     public String getPublished() { return published; }
     public String getStoryLine() { return storyLine; }
+    public int getRating() { return rating; }
 
     public String getAuthors(){
         String names = "";

@@ -59,7 +59,6 @@ public class InsertDialog{
         TextField titleTextField = new TextField();
         TextField authorTextField = new TextField();
         TextField genreTextField = new TextField();
-        TextField ratingTextField = new TextField();
         TextField dateTextField = new TextField();
         TextField isbnTextField = new TextField();
         OkButton = new Button("OK");

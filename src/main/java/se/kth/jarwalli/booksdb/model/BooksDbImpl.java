@@ -161,6 +161,19 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
+    public boolean updateBook(int rating, String isbn) throws BooksDbException{
+        String sql = "UPDATE Book SET rating = ?" + " WHERE isbn = ?;";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)){
+            pstmt.setInt(1, rating);
+            pstmt.setString(2, isbn);
+            int n = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+        }
+        return true;
+    }
+
+    @Override
     public boolean addBook(String isbn, String title, String datePublished, String genre, int rating, String authors) throws BooksDbException {
         // TODO Possible to use one only PreparedStatement for all 3 steps and consequently one only try also?
         String[] authorStringArray = authors.split(",", 0);

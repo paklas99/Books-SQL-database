@@ -41,5 +41,7 @@ public interface BooksDbInterface {
 
     public boolean addBook(String isbn, String title, String published, String genre, int rating, String authors) throws BooksDbException;
     public boolean deleteBook(String isbn) throws BooksDbException;
+
+    public boolean updateBook(int rating, String isbn) throws BooksDbException;
     public ArrayList<String> retrieveAllAuthors() throws BooksDbException;
 }

@@ -41,9 +41,10 @@ public class InsertDialog{
     private Button addExistingAuthorButton;
     private Button addAuthorButton;
     private Button cancelAuthorButton;
+    private ArrayList<ComboBox> extraAuthorComboBoxes;
 
     private Button createNewAuthorButton;
-    private Button clearSelectedAuthorsButton;
+    //private Button clearSelectedAuthorsButton;
     private Button okConfirmAuthorsButton;
     private ArrayList<Author> allAuthors;
     private ArrayList<Text> chosenAuthorsTextForDisplay;
@@ -78,6 +79,7 @@ public class InsertDialog{
         authorsToCreateList = new ArrayList<>();
         allAuthors = new ArrayList<>();
         authorIdsToReturn = new ArrayList<>();
+        extraAuthorComboBoxes = new ArrayList<>();
 
         // Create nodes for the gridPane dialog:
         TextField titleTextField = new TextField();
@@ -97,11 +99,12 @@ public class InsertDialog{
         okInsertBookButton = new Button("OK");
         addAuthorButton = new Button("Add Author");
         existingAuthorsComboBox = new ComboBox<>();
+        extraAuthorComboBoxes.add(existingAuthorsComboBox);
         existingAuthorsComboBox.setEditable(true);
         addExistingAuthorButton = new Button("+");
         //createNewAuthorButton = new Button("+");
         cancelAuthorButton = new Button("Cancel");
-        clearSelectedAuthorsButton = new Button("Clear Selection");
+        //clearSelectedAuthorsButton = new Button("Clear Selection");
         okConfirmAuthorsButton = new Button("Add Authors");
 
 
@@ -193,7 +196,15 @@ public class InsertDialog{
         addExistingAuthorButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                String existingAuthorToAdd = (String)existingAuthorsComboBox.getValue();
+                ComboBox temp = new ComboBox<>();
+                temp.setEditable(true);
+                temp.getItems().addAll(FXCollections.observableArrayList(authorListToStringList(allAuthors)));
+                authorListVBox.getChildren().add(temp);
+                extraAuthorComboBoxes.add(temp);
+                authorScene.getWindow().sizeToScene();
+
+
+/*                String existingAuthorToAdd = (String)existingAuthorsComboBox.getValue();
                 System.out.println((String)existingAuthorsComboBox.getValue());
                 System.out.println("clas:" +  existingAuthorsComboBox.getSelectionModel().getClass());
                 System.out.println("index:" + existingAuthorsComboBox.getSelectionModel().getSelectedIndex());
@@ -205,7 +216,7 @@ public class InsertDialog{
                     Label l = new Label(existingAuthorToAdd);
                     refreshSelectedAuthors();
                     authorScene.getWindow().sizeToScene();
-                }
+                }*/
             }
         });
 /*
@@ -221,7 +232,7 @@ public class InsertDialog{
             }
         });*/
 
-        clearSelectedAuthorsButton.setOnAction(new EventHandler<ActionEvent>() {
+/*        clearSelectedAuthorsButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 chosenAuthorsTextForDisplay.clear();
@@ -229,7 +240,7 @@ public class InsertDialog{
                 authorIdsToReturn.clear();
                 refreshSelectedAuthors();
             }
-        });
+        });*/
 
         okConfirmAuthorsButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -253,12 +264,11 @@ public class InsertDialog{
         authorScene = new Scene(authorVBox, 400, 300);
         textFlowAuthors = new TextFlow(new Text("Choose existing author from the dropdown menu,or write the name of the new author."));
         //textFlowAuthors.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-        authorListVBox = new VBox();
-        authorListVBox.setPrefHeight(250);
+        authorListVBox = new VBox(5);
         authorListVBox.setPadding(new Insets(5,5,5,5));
+        authorListVBox.setPrefHeight(250);
         //authorListVBox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         authorVBox.setAlignment(Pos.CENTER);
-        authorVBox.getChildren().add(authorListVBox);
         authorStage.setTitle("Add Author");
         authorGridPane.setPadding(new Insets(10, 10, 10, 10));
         authorGridPane.setVgap(5);
@@ -283,13 +293,19 @@ public class InsertDialog{
 
         // Add to Gridpane
         //structureHBox.getChildren().add(authorListVBox);
+        authorVBox.getChildren().add(textFlowAuthors);
+        authorVBox.getChildren().add(authorGridPane);
         authorVBox.getChildren().add(buttonHbox);
         authorListVBox.setAlignment(Pos.TOP_CENTER);
-        authorGridPane.add(existingAuthorsComboBox, 0,0);
-        authorGridPane.add(addExistingAuthorButton,1,0);
-        authorListVBox.getChildren().add(textFlowAuthors);
-        authorListVBox.getChildren().add(authorGridPane);
-        //authorListVBox.getChildren().add(authorGridPane);
+        authorGridPane.setAlignment(Pos.CENTER);
+        authorGridPane.add(authorListVBox, 0, 0);
+
+        authorListVBox.getChildren().add(existingAuthorsComboBox);
+        VBox wrapButton = new VBox(addExistingAuthorButton);
+        wrapButton.setAlignment(Pos.TOP_CENTER);
+        wrapButton.setPadding(new Insets(5,5,5,5));
+        authorGridPane.add(wrapButton,1,0);
+
         //authorGridPane.add(existingAuthorLabel, 0, 0);
 
         //authorGridPane.add(newAuthorLabel, 0, 3);
@@ -302,7 +318,7 @@ public class InsertDialog{
         authorGridPane.add(new Separator(), 0,4);
         authorGridPane.add(new Separator(), 1,4);
         authorGridPane.add(new Separator(), 2,4);*/
-        buttonHbox.getChildren().addAll(cancelAuthorButton, clearSelectedAuthorsButton, okConfirmAuthorsButton);
+        buttonHbox.getChildren().addAll(cancelAuthorButton, okConfirmAuthorsButton);
 
 
 

@@ -30,7 +30,7 @@ public class InsertDialog{
     private String genre;
     private String isbn;
     private String datePublished;
-    private int rating;
+    private Integer rating;
     private Button okInsertBookButton;
     private Button plusAuthorButton;
     private Button addAuthorButton;
@@ -80,7 +80,7 @@ public class InsertDialog{
         okInsertBookButton = new Button("OK");
         addAuthorButton = new Button("Add Author");
         existingAuthorsComboBox = new ComboBox<>();
-        extraAuthorComboBoxes.add(existingAuthorsComboBox);
+
         existingAuthorsComboBox.setEditable(true);
         plusAuthorButton = new Button("+");
         cancelAuthorButton = new Button("Cancel");
@@ -174,6 +174,8 @@ public class InsertDialog{
             public void handle(ActionEvent actionEvent) {
                 authorsToCreateList.clear();
                 authorIdsToReturn.clear();
+                extraAuthorComboBoxes.clear();
+                extraAuthorComboBoxes.add(existingAuthorsComboBox);
                 addAuthorDialog();
             }
         });
@@ -181,13 +183,14 @@ public class InsertDialog{
         okInsertBookButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                System.out.println(title + genre + datePublished + isbn + rating);
                 title = titleTextField.getCharacters().toString();
                 genre = (String) genreComboBox.getValue();
-                rating = (int) ratingComboBox.getValue();
-                datePublished = datePicker.getValue().toString();
+                rating = (Integer) ratingComboBox.getValue();
                 isbn = isbnTextField.getCharacters().toString();
                 System.out.println(title + genre + datePublished + isbn + rating);
-                if(title!=null && genre!=null && datePublished!=null && isbn!=null){
+                if(title!=null && genre!=null && datePicker.getValue()!=null && isbn!=null){
+                    datePublished = datePicker.getValue().toString();
                     controller.handleAddBook(isbn, title, datePublished, genre, rating, authorsToCreateList);
                     controller.handleRelateBookWithAuthor(isbn, authorIdsToReturn);
                     stage.close();
@@ -240,6 +243,9 @@ public class InsertDialog{
                     }
                     else System.out.println("empty combobox");
                 }
+                for(int i=1; i<extraAuthorComboBoxes.size(); i++){
+                    authorListVBox.getChildren().remove(extraAuthorComboBoxes.get(i));
+                }
                 System.out.println(authorIdsToReturn);
 
                 authorStage.close();
@@ -252,8 +258,6 @@ public class InsertDialog{
     }
 
     public void addAuthorDialog(){
-
-
         authorStage.showAndWait();
 
 
@@ -296,7 +300,7 @@ public class InsertDialog{
         return datePublished;
     }
 
-    public int getRating() {
+    public Integer getRating() {
         return rating;
     }
 

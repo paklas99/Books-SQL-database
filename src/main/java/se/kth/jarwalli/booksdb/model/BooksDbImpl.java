@@ -176,7 +176,7 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public boolean addBook(String isbn, String title, String datePublished, String genre, int rating, ArrayList<String> authors) throws BooksDbException {
+    public boolean addBook(String isbn, String title, String datePublished, String genre, Integer rating, ArrayList<String> authors) throws BooksDbException {
         ArrayList<Integer> authorIdList = new ArrayList<>();
         // Step 1: Create Book
         String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?)";
@@ -188,7 +188,10 @@ public class BooksDbImpl implements BooksDbInterface {
             pstmt.setString(2, title);
             pstmt.setString(3, datePublished);
             pstmt.setString(4, genre);
-            pstmt.setInt(5, rating);
+            if(rating==null){
+                pstmt.setNull(5, Types.INTEGER);
+            }
+            else {pstmt.setInt(5, rating);}
             int n = pstmt.executeUpdate();
 
             // Step 2: Create Author
@@ -215,6 +218,7 @@ public class BooksDbImpl implements BooksDbInterface {
             }
             con.commit();
         } catch (SQLException e) {
+            System.out.println("Catched!");
             if (con != null) {
                 try {
                     con.rollback();

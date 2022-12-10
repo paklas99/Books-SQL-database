@@ -79,7 +79,7 @@ public class Controller {
         }
     }
 
-    void handleAddBook(String isbn, String title, String published, String genre, int rating, ArrayList<String> authorsToCreate){
+    void handleAddBook(String isbn, String title, String published, String genre, Integer rating, ArrayList<String> authorsToCreate){
         try {
             booksDb.addBook(isbn, title, published, genre, rating, authorsToCreate);
         }catch (BooksDbException e){

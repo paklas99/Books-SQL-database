@@ -30,7 +30,7 @@ public class Controller {
 
     protected void onSearchSelected(String searchFor, SearchMode mode) {
         try {
-            if (searchFor != null && searchFor.length() > 1) {
+            if (searchFor != null && searchFor.length() > 0) {
                 List<Book> result = null;
                 switch (mode) {
                     case Title:
@@ -42,8 +42,15 @@ public class Controller {
                     case Author:
                         result = booksDb.searchBookByAuthor(searchFor);
                         break;
+                    case Genre:
+                        result = booksDb.searchBookByGenre(searchFor);
+                        break;
+                    case Rating:
+                        result = booksDb.searchBookByRating(Integer.valueOf(searchFor));
+                        break;
+
                     default:
-                        result= new ArrayList<>();
+                        result = new ArrayList<>();
                 }
                 if (result == null || result.isEmpty()) {
                     booksView.showAlertAndWait(
@@ -56,7 +63,7 @@ public class Controller {
                         "Enter a search string!", WARNING);
             }
         } catch (Exception e) {
-            booksView.showAlertAndWait("Database error.",ERROR);
+            booksView.showAlertAndWait("Database error.", ERROR);
         }
     }
 
@@ -79,44 +86,44 @@ public class Controller {
         }
     }
 
-    void handleAddBook(String isbn, String title, String published, String genre, int rating, String authors){
+    void handleAddBook(String isbn, String title, String published, String genre, int rating, String authors) {
         try {
             booksDb.addBook(isbn, title, published, genre, rating, authors);
-        }catch (BooksDbException e){
+        } catch (BooksDbException e) {
             // TODO: add alert box
         }
     }
 
-    void handleDeleteBook(String isbn, String title){
-        try{
+    void handleDeleteBook(String isbn, String title) {
+        try {
             Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to delete " + title + " from the database?", CONFIRMATION);
-            if (result.isPresent() && result.get()== ButtonType.CANCEL){
+            if (result.isPresent() && result.get() == ButtonType.CANCEL) {
                 return;
             }
             booksDb.deleteBook(isbn);
             booksView.clearBooks();
-        }catch (BooksDbException e){
+        } catch (BooksDbException e) {
 
         }
     }
 
-    void handleUpdateBook(int rating, String isbn){
-        try{
+    void handleUpdateBook(int rating, String isbn) {
+        try {
             /*Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to update " + isbn + " from the database?", CONFIRMATION);
             if (result.isPresent() && result.get()== ButtonType.CANCEL){
                 return;
             }*/
             booksDb.updateBook(rating, isbn);
-        }catch (BooksDbException e){
+        } catch (BooksDbException e) {
 
         }
     }
 
-    ArrayList<String> retrieveAllAuthors(){
-        ArrayList<String> allAuthors= null;
-        try{
+    ArrayList<String> retrieveAllAuthors() {
+        ArrayList<String> allAuthors = null;
+        try {
             allAuthors = booksDb.retrieveAllAuthors();
-        }catch (BooksDbException e){
+        } catch (BooksDbException e) {
             // TODO
         }
         return allAuthors;

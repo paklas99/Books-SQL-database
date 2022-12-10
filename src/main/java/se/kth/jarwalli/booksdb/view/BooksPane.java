@@ -173,7 +173,9 @@ public class BooksPane extends VBox {
         MenuItem titleItem = new MenuItem("Title");
         MenuItem isbnItem = new MenuItem("ISBN");
         MenuItem authorItem = new MenuItem("Author");
-        searchMenu.getItems().addAll(titleItem, isbnItem, authorItem);
+        MenuItem genreItem = new MenuItem("Genre");
+        MenuItem ratingItem = new MenuItem("Rating");
+        searchMenu.getItems().addAll(titleItem, isbnItem, authorItem, genreItem, ratingItem);
 
 
         Menu manageMenu = new Menu("Manage");
@@ -223,6 +225,30 @@ public class BooksPane extends VBox {
             }
         };
         menuBar.getMenus().get(1).getItems().get(2).addEventHandler(ActionEvent.ACTION, menuSearchAuthorHandler);
+
+        EventHandler<ActionEvent> menuSearchGenreHandler = new EventHandler<>() {
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (actionEvent.getSource() instanceof MenuItem) {
+                    String searchCriteria = searchDialogs("genre");
+                    controller.onSearchSelected(searchCriteria, SearchMode.Genre);
+                }
+            }
+        };
+        menuBar.getMenus().get(1).getItems().get(3).addEventHandler(ActionEvent.ACTION, menuSearchGenreHandler);
+
+        EventHandler<ActionEvent> menuSearchRatingHandler = new EventHandler<>() {
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (actionEvent.getSource() instanceof MenuItem) {
+                    String searchCriteria = searchDialogs("Rating");
+                    controller.onSearchSelected(searchCriteria, SearchMode.Rating);
+                }
+            }
+        };
+        menuBar.getMenus().get(1).getItems().get(4).addEventHandler(ActionEvent.ACTION, menuSearchRatingHandler);
 
         EventHandler<ActionEvent> connectHandler = new EventHandler<>() {
 

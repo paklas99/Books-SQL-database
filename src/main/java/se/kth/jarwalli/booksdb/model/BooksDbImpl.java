@@ -105,14 +105,14 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public List<Book> searchBooksByISBN(String isbn) throws BooksDbException {
+    public List<Book> searchBooksByISBN(String searchIsbn) throws BooksDbException {
         ArrayList<Book> tmp = new ArrayList<>();
         try {
             String sql = "SELECT  book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
                     + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
                     + " WHERE wrote.isbn LIKE ? GROUP BY book.isbn";
             PreparedStatement pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, "%" + isbn + "%");
+            pstmt.setString(1, "%" + searchIsbn + "%");
             ResultSet pResultset = pstmt.executeQuery();
             retrieveBooks(pResultset);
 
@@ -127,7 +127,7 @@ public class BooksDbImpl implements BooksDbInterface {
 
     // TODO TRY with resources i alla sökfunktioner
     @Override
-    public List<Book> searchBookByAuthor(String author) throws BooksDbException {
+    public List<Book> searchBookByAuthor(String searchAuthor) throws BooksDbException {
         ArrayList<Book> tmp;
         PreparedStatement pstmt = null;
         try {
@@ -135,7 +135,7 @@ public class BooksDbImpl implements BooksDbInterface {
                     + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
                     + " GROUP BY book.isbn HAVING fullname LIKE ?";
             pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, "%" + author + "%");
+            pstmt.setString(1, "%" + searchAuthor + "%");
             ResultSet pResultset = pstmt.executeQuery();
 
             retrieveBooks(pResultset);
@@ -147,6 +147,50 @@ public class BooksDbImpl implements BooksDbInterface {
         }
         return tmp;
     }
+
+    @Override
+    public List<Book> searchBookByGenre(String searchGenre) throws BooksDbException {
+        ArrayList<Book> tmp;
+        PreparedStatement pstmt = null;
+        try {
+            String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                    + " GROUP BY book.isbn HAVING genre LIKE ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, "%" + searchGenre + "%");
+            ResultSet pResultset = pstmt.executeQuery();
+
+            retrieveBooks(pResultset);
+
+            tmp = (ArrayList<Book>) result.clone();
+            result.clear();
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+        }
+        return tmp;
+    }
+    @Override
+    public List<Book> searchBookByRating(int searchRating) throws BooksDbException {
+        ArrayList<Book> tmp;
+        PreparedStatement pstmt = null;
+        try {
+            String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                    + " GROUP BY book.isbn HAVING rating LIKE ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, "%" + searchRating + "%");
+            ResultSet pResultset = pstmt.executeQuery();
+
+            retrieveBooks(pResultset);
+
+            tmp = (ArrayList<Book>) result.clone();
+            result.clear();
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+        }
+        return tmp;
+    }
+
 
     @Override
     public boolean deleteBook(String isbn) throws BooksDbException {

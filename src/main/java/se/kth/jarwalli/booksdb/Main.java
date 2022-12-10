@@ -39,7 +39,7 @@ public class Main extends Application {
                 booksDb.disconnect();
             } catch (Exception e) {}
         });
-        primaryStage.setScene(scene);
+            primaryStage.setScene(scene);
         primaryStage.show();
     }
 

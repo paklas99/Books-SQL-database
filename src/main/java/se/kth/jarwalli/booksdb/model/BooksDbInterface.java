@@ -36,8 +36,10 @@ public interface BooksDbInterface {
     // TODO: Add abstract methods for all inserts, deletes and queries 
     // mentioned in the instructions for the assignement.
 
-    public List<Book> searchBooksByISBN(String isbn) throws SQLException, BooksDbException;
-    public List<Book> searchBookByAuthor(String author) throws BooksDbException, SQLException;
+    public List<Book> searchBooksByISBN(String isbn) throws BooksDbException;
+    public List<Book> searchBookByAuthor(String author) throws BooksDbException;
+    public List<Book> searchBookByGenre(String Genre) throws BooksDbException;
+    public List<Book> searchBookByRating(int rating) throws BooksDbException;
 
     public boolean addBook(String isbn, String title, String published, String genre, int rating, String authors) throws BooksDbException;
     public boolean deleteBook(String isbn) throws BooksDbException;

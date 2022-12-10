@@ -87,13 +87,12 @@ public class BooksDbImpl implements BooksDbInterface {
         ArrayList<Book> tmp = new ArrayList<>();
         try {
             String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
                     + " WHERE title LIKE ? GROUP BY book.isbn";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + searchTitle + "%");
             ResultSet pResultset = pstmt.executeQuery();
             retrieveBooks(pResultset);
-
 
             tmp = (ArrayList<Book>) result.clone();
             result.clear();
@@ -109,8 +108,8 @@ public class BooksDbImpl implements BooksDbInterface {
         ArrayList<Book> tmp = new ArrayList<>();
         try {
             String sql = "SELECT  book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
-                    + " WHERE wrote.isbn LIKE ? GROUP BY book.isbn";
+                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
+                    + " WHERE book.isbn LIKE ? GROUP BY book.isbn";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + searchIsbn + "%");
             ResultSet pResultset = pstmt.executeQuery();
@@ -132,7 +131,7 @@ public class BooksDbImpl implements BooksDbInterface {
         PreparedStatement pstmt = null;
         try {
             String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
                     + " GROUP BY book.isbn HAVING fullname LIKE ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + searchAuthor + "%");
@@ -154,7 +153,7 @@ public class BooksDbImpl implements BooksDbInterface {
         PreparedStatement pstmt = null;
         try {
             String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
                     + " GROUP BY book.isbn HAVING genre LIKE ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + searchGenre + "%");
@@ -175,7 +174,7 @@ public class BooksDbImpl implements BooksDbInterface {
         PreparedStatement pstmt = null;
         try {
             String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM author JOIN book JOIN wrote ON book.isbn = wrote.isbn AND author.authorId = wrote.authorId"
+                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
                     + " GROUP BY book.isbn HAVING rating LIKE ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, "%" + searchRating + "%");
@@ -313,9 +312,12 @@ public class BooksDbImpl implements BooksDbInterface {
                     pResultSet.getString("datePublished"),
                     pResultSet.getString("genre"),
                     pResultSet.getInt("rating")));
-            String[] tempNames = pResultSet.getString("fullname").split(",", 0);
-            for (int i = 0; i < tempNames.length; i++) {
-                tempBook.addAuthor(tempNames[i]);
+            System.out.println(pResultSet.getString("fullname"));
+            if(pResultSet.getString("fullname")!=null){
+                String[] tempNames = pResultSet.getString("fullname").split(",", 0);
+                for (int i = 0; i < tempNames.length; i++) {
+                    tempBook.addAuthor(tempNames[i]);
+                }
             }
         }
     }

@@ -291,8 +291,12 @@ public class BooksPane extends VBox {
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
                     Book tempBook = booksTable.getSelectionModel().getSelectedItem();
-                    System.out.println(tempBook.getIsbn());
-                    controller.handleDeleteBook(tempBook.getIsbn(), tempBook.getTitle());
+                    if(tempBook!=null){
+                        controller.handleDeleteBook(tempBook.getIsbn(), tempBook.getTitle());
+                    }
+                    else{
+                        showAlertAndWait("You need to select the book you want to remove from the database.", Alert.AlertType.INFORMATION);
+                    }
 
 
                 }

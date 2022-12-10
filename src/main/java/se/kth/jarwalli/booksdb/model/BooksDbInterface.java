@@ -41,8 +41,11 @@ public interface BooksDbInterface {
     public List<Book> searchBookByGenre(String Genre) throws BooksDbException;
     public List<Book> searchBookByRating(int rating) throws BooksDbException;
 
-    public boolean addBook(String isbn, String title, String published, String genre, int rating, String authors) throws BooksDbException;
+    public boolean addBook(String isbn, String title, String published, String genre, Integer rating, ArrayList<String> authors) throws BooksDbException;
     public boolean deleteBook(String isbn) throws BooksDbException;
+    public ArrayList<Author> retrieveAllAuthors() throws BooksDbException;
+
+    public boolean relateBookWithAuthor(String isbn, ArrayList<Integer> authorIds) throws BooksDbException;
 
     public boolean updateBook(int rating, String isbn) throws BooksDbException;
     public ArrayList<String> retrieveAllAuthors() throws BooksDbException;

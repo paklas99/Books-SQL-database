@@ -86,10 +86,12 @@ public class Controller {
         }
     }
 
-    void handleAddBook(String isbn, String title, String published, String genre, int rating, String authors) {
+
+    void handleAddBook(String isbn, String title, String published, String genre, Integer rating, ArrayList<String> authorsToCreate){
         try {
-            booksDb.addBook(isbn, title, published, genre, rating, authors);
-        } catch (BooksDbException e) {
+            booksDb.addBook(isbn, title, published, genre, rating, authorsToCreate);
+        }catch (BooksDbException e){
+
             // TODO: add alert box
         }
     }
@@ -107,6 +109,13 @@ public class Controller {
         }
     }
 
+    void handleRelateBookWithAuthor(String isbn, ArrayList<Integer> authorIds){
+        try{
+            booksDb.relateBookWithAuthor(isbn, authorIds);
+        }catch (BooksDbException e){
+            // TODO
+        }
+    }
     void handleUpdateBook(int rating, String isbn) {
         try {
             /*Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to update " + isbn + " from the database?", CONFIRMATION);

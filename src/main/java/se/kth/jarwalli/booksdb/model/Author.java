@@ -1,5 +1,7 @@
 package se.kth.jarwalli.booksdb.model;
 
+import java.util.ArrayList;
+
 public class Author {
     private int authorId;
     private String fullName;
@@ -11,6 +13,9 @@ public class Author {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public Author(int authorId, String fullName){
+        this(authorId, fullName, null);
+    }
     public Author(String fullName){
         this(0, fullName, null);
     }
@@ -38,6 +43,8 @@ public class Author {
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
+
+
 
     @Override
     public String toString() {

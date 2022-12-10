@@ -64,22 +64,22 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public ArrayList<String> retrieveAllAuthors() throws BooksDbException {
-        ArrayList<String> allAuthorsString = new ArrayList<>();
-        ArrayList <String> allAuthorsStringCopy;
+    public ArrayList<Author> retrieveAllAuthors() throws BooksDbException {
+        ArrayList<Author> allAuthors = new ArrayList<>();
+        ArrayList<Author> allAuthorsCopy;
         String sql = "SELECT authorId, fullname FROM author";
-        try (Statement stmt = con.createStatement()){
+        try (Statement stmt = con.createStatement()) {
             ResultSet resultset = stmt.executeQuery(sql);
 
-            while (resultset.next()){
-                allAuthorsString.add(resultset.getString("fullName"));
+            while (resultset.next()) {
+                allAuthors.add(new Author(resultset.getInt("authorId"), resultset.getString("fullName")));
             }
-            allAuthorsStringCopy = (ArrayList<String>) allAuthorsString.clone();
-            allAuthorsString.clear();
+            allAuthorsCopy = (ArrayList<Author>) allAuthors.clone();
+            allAuthors.clear();
         } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
-      return allAuthorsStringCopy;
+        return allAuthorsCopy;
     }
 
     @Override
@@ -204,6 +204,21 @@ public class BooksDbImpl implements BooksDbInterface {
         return true;
     }
 
+    public boolean relateBookWithAuthor(String isbn, ArrayList<Integer> authorIds) throws BooksDbException {
+        String sql = "INSERT INTO wrote VALUES(?, ?)";
+        for (Integer i : authorIds) {
+            System.out.println(i);
+            try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+                pstmt.setInt(1, i);
+                pstmt.setString(2, isbn);
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                throw new BooksDbException(e.getMessage(), e);
+            }
+        }
+        return true;
+    }
+
     @Override
     public boolean updateBook(int rating, String isbn) throws BooksDbException{
         String sql = "UPDATE Book SET rating = ?" + " WHERE isbn = ?;";
@@ -218,7 +233,7 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public boolean addBook(String isbn, String title, String datePublished, String genre, int rating, String authors) throws BooksDbException {
+    public boolean addBook(String isbn, String title, String datePublished, String genre, Integer rating, String authors) throws BooksDbException {
         // TODO Possible to use one only PreparedStatement for all 3 steps and consequently one only try also?
         String[] authorStringArray = authors.split(",", 0);
         ArrayList<Integer> authorIdList = new ArrayList<>();
@@ -232,14 +247,17 @@ public class BooksDbImpl implements BooksDbInterface {
             pstmt.setString(2, title);
             pstmt.setString(3, datePublished);
             pstmt.setString(4, genre);
-            pstmt.setInt(5, rating);
+            if(rating==null){
+                pstmt.setNull(5, Types.INTEGER);
+            }
+            else {pstmt.setInt(5, rating);}
             int n = pstmt.executeUpdate();
 
             // Step 2: Create Author
             String sql2 = "INSERT INTO Author VALUES(NULL, ?, NULL)";
-            for (int i = 0; i < authorStringArray.length; i++) {
+            for (int i = 0; i < authors.size(); i++) {
                 pstmt = con.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
-                pstmt.setString(1, authorStringArray[i]);
+                pstmt.setString(1, authors.get(i));
                 pstmt.executeUpdate();
                 ResultSet resultAuthorKey = pstmt.getGeneratedKeys();
                 while (resultAuthorKey.next()) {
@@ -259,9 +277,11 @@ public class BooksDbImpl implements BooksDbInterface {
             }
             con.commit();
         } catch (SQLException e) {
-            if(con!=null) {
+            System.out.println("Catched!");
+            if (con != null) {
                 try {
                     con.rollback();
+                    System.out.println("Rollback");
                 } catch (SQLException ex) {
                     throw new BooksDbException(ex.getMessage(), ex);
                 }

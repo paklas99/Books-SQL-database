@@ -17,7 +17,7 @@ public class Book {
     private ArrayList<Author> authors;
     private String storyLine = "";
     private String genre;
-    private int rating;
+    private Integer rating;
     // TODO: 
     // Add authors, as a separate class(!), and corresponding methods, to your implementation
     // as well, i.e. "private ArrayList<Author> authors;"

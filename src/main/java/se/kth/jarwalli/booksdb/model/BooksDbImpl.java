@@ -176,7 +176,7 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public boolean addBook(String isbn, String title, String datePublished, String genre, int rating, ArrayList<String> authors) throws BooksDbException {
+    public boolean addBook(String isbn, String title, String datePublished, String genre, Integer rating, ArrayList<String> authors) throws BooksDbException {
         ArrayList<Integer> authorIdList = new ArrayList<>();
         // Step 1: Create Book
         String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?)";

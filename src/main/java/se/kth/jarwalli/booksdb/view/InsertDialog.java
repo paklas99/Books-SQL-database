@@ -194,6 +194,7 @@ public class InsertDialog{
                     controller.handleAddBook(isbn, title, datePublished, genre, rating, authorsToCreateList);
                     controller.handleRelateBookWithAuthor(isbn, authorIdsToReturn);
                     stage.close();
+                    // TODO
                     titleTextField.clear();
                     genreTextField.clear();
                     datePicker.setValue(null);

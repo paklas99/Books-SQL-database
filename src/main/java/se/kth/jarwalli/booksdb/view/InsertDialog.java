@@ -30,7 +30,7 @@ public class InsertDialog{
     private String genre;
     private String isbn;
     private String datePublished;
-    private Integer rating;
+    private int rating;
     private Button okInsertBookButton;
     private Button plusAuthorButton;
     private Button addAuthorButton;
@@ -41,13 +41,11 @@ public class InsertDialog{
     private ArrayList<Text> chosenAuthorsTextForDisplay;
     private ArrayList<Integer> authorIdsToReturn;
     private ArrayList<String> authorsToCreateList;
-
     private ComboBox existingAuthorsComboBox;
     private GridPane authorGridPane;
     private VBox authorVBox;
     private VBox authorListVBox;
     private TextFlow textFlowAuthors;
-
     public InsertDialog(Controller controller) {
         initDialog(controller);
     }
@@ -136,7 +134,6 @@ public class InsertDialog{
             public void handle(ActionEvent actionEvent) {
                 authorsToCreateList.clear();
                 authorIdsToReturn.clear();
-                extraAuthorComboBoxes.clear();
                 addAuthorDialog();
             }
         });
@@ -146,7 +143,7 @@ public class InsertDialog{
             public void handle(ActionEvent actionEvent) {
                 title = titleTextField.getCharacters().toString();
                 genre = (String) genreComboBox.getValue();
-                rating = (Integer) ratingComboBox.getValue();
+                rating = (int) ratingComboBox.getValue();
                 datePublished = datePicker.getValue().toString();
                 isbn = isbnTextField.getCharacters().toString();
                 System.out.println(title + genre + datePublished + isbn + rating);
@@ -161,6 +158,7 @@ public class InsertDialog{
                     genreComboBox.getSelectionModel().clearSelection();
                     dateTextField.clear();
                     isbnTextField.clear();
+                    existingAuthorsComboBox.getSelectionModel().clearSelection();
                 }
                 else{
                     showAlert(Alert.AlertType.WARNING, "Please fill in all the fields!");
@@ -187,18 +185,22 @@ public class InsertDialog{
             @Override
             public void handle(ActionEvent actionEvent) {
                 for (ComboBox c : extraAuthorComboBoxes){
+                    System.out.println("selectedItem:" + c.getSelectionModel().getSelectedItem());
                     if((String)c.getSelectionModel().getSelectedItem()!="" && c.getSelectionModel().getSelectedItem()!=null){
                         int tempIndex = c.getSelectionModel().getSelectedIndex();
+                        System.out.println("index: " + c.getSelectionModel().getSelectedIndex());
                         System.out.println("adding... : " + c.getSelectionModel().getSelectedItem() + " - " + c.getSelectionModel().getSelectedIndex());
                         if(tempIndex==-1){
                             authorsToCreateList.add((String)c.getSelectionModel().getSelectedItem());
                         }
                         else{
                             authorIdsToReturn.add(allAuthors.get(tempIndex).getAuthorId());
+                            System.out.println("adding existing author: " + allAuthors.get(tempIndex).getFullName());
                         }
                     }
                     else System.out.println("empty combobox");
                 }
+                System.out.println(authorIdsToReturn);
 
                 authorStage.close();
 
@@ -230,9 +232,6 @@ public class InsertDialog{
         textFlowAuthors.setTextAlignment(TextAlignment.CENTER);
         textFlowAuthors.autosize();
         textFlowAuthors.setPadding(new Insets(8,8,8,8));
-
-
-        //Create nodes
 
         HBox buttonHbox = new HBox();
         buttonHbox.setAlignment(Pos.CENTER);

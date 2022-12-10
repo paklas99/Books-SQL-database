@@ -128,8 +128,8 @@ public class Controller {
         }
     }
 
-    ArrayList<String> retrieveAllAuthors() {
-        ArrayList<String> allAuthors = null;
+    ArrayList<Author> retrieveAllAuthors() {
+        ArrayList<Author> allAuthors = null;
         try {
             allAuthors = booksDb.retrieveAllAuthors();
         } catch (BooksDbException e) {

@@ -233,9 +233,7 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public boolean addBook(String isbn, String title, String datePublished, String genre, Integer rating, String authors) throws BooksDbException {
-        // TODO Possible to use one only PreparedStatement for all 3 steps and consequently one only try also?
-        String[] authorStringArray = authors.split(",", 0);
+    public boolean addBook(String isbn, String title, String datePublished, String genre, Integer rating, ArrayList<String> authors) throws BooksDbException {
         ArrayList<Integer> authorIdList = new ArrayList<>();
         // Step 1: Create Book
         String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?)";

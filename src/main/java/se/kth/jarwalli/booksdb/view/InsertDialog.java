@@ -31,7 +31,6 @@ public class InsertDialog{
     private Scene authorScene;
 
     private String title;
-    private ArrayList<String> authorsToCreateList;
     private String genre;
     private String isbn;
     private String datePublished;
@@ -49,6 +48,7 @@ public class InsertDialog{
     private ArrayList<Author> allAuthors;
     private ArrayList<Text> chosenAuthorsTextForDisplay;
     private ArrayList<Integer> authorIdsToReturn;
+    private ArrayList<String> authorsToCreateList;
 
     private ComboBox existingAuthorsComboBox;
     private GridPane authorGridPane;
@@ -70,7 +70,7 @@ public class InsertDialog{
         stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         GridPane gridPane = new GridPane();
-        Scene scene = new Scene(gridPane, 400, 300);
+        Scene scene = new Scene(gridPane);
         stage.setTitle("Add new Book");
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setVgap(5);
@@ -245,6 +245,17 @@ public class InsertDialog{
         okConfirmAuthorsButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                for (ComboBox c : extraAuthorComboBoxes){
+                    int tempIndex = c.getSelectionModel().getSelectedIndex();
+                    System.out.println(c.getSelectionModel().getSelectedItem() + " - " + c.getSelectionModel().getSelectedIndex());
+                    if(tempIndex==-1){
+                        authorsToCreateList.add((String)c.getSelectionModel().getSelectedItem());
+                    }
+                    else{
+                        authorIdsToReturn.add(allAuthors.get(tempIndex).getAuthorId());
+                    }
+                }
+
                 authorStage.close();
 
             }
@@ -255,6 +266,7 @@ public class InsertDialog{
     }
 
     public void addAuthorDialog(){
+
         authorStage = new Stage();
         authorStage.initModality(Modality.APPLICATION_MODAL);
         authorGridPane = new GridPane();
@@ -329,14 +341,6 @@ public class InsertDialog{
 
         // Function
 
-
-
-
-        createNewAuthorButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-            }
-        });
     }
     public void showDialog(ArrayList<Author> allAuthors){
 

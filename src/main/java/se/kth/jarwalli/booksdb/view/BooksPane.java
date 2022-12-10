@@ -280,8 +280,10 @@ public class BooksPane extends VBox {
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
                     Book tempBook = booksTable.getSelectionModel().getSelectedItem();
+
                     controller.handleUpdateBook(tempBook.getRating(), tempBook.getIsbn());
-                    updateDialog.showUpdateDialog();
+                    updateDialog.showUpdateDialog(tempBook);
+
 
                 }
             }

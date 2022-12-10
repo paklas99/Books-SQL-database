@@ -8,7 +8,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
@@ -37,7 +36,7 @@ public class InsertDialog{
     private int rating;
 
     private Button okInsertBookButton;
-    private Button addExistingAuthorButton;
+    private Button plusAuthorButton;
     private Button addAuthorButton;
     private Button cancelAuthorButton;
     private ArrayList<ComboBox> extraAuthorComboBoxes;
@@ -101,7 +100,7 @@ public class InsertDialog{
         existingAuthorsComboBox = new ComboBox<>();
         extraAuthorComboBoxes.add(existingAuthorsComboBox);
         existingAuthorsComboBox.setEditable(true);
-        addExistingAuthorButton = new Button("+");
+        plusAuthorButton = new Button("+");
         //createNewAuthorButton = new Button("+");
         cancelAuthorButton = new Button("Cancel");
         //clearSelectedAuthorsButton = new Button("Clear Selection");
@@ -158,6 +157,7 @@ public class InsertDialog{
             public void handle(ActionEvent actionEvent) {
                 authorsToCreateList.clear();
                 authorIdsToReturn.clear();
+                extraAuthorComboBoxes.clear();
                 addAuthorDialog();
 
 /*                TextField t = new TextField();
@@ -193,7 +193,7 @@ public class InsertDialog{
             }
         });
 
-        addExistingAuthorButton.setOnAction(new EventHandler<ActionEvent>() {
+        plusAuthorButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 ComboBox temp = new ComboBox<>();
@@ -246,14 +246,17 @@ public class InsertDialog{
             @Override
             public void handle(ActionEvent actionEvent) {
                 for (ComboBox c : extraAuthorComboBoxes){
-                    int tempIndex = c.getSelectionModel().getSelectedIndex();
-                    System.out.println(c.getSelectionModel().getSelectedItem() + " - " + c.getSelectionModel().getSelectedIndex());
-                    if(tempIndex==-1){
-                        authorsToCreateList.add((String)c.getSelectionModel().getSelectedItem());
+                    if((String)c.getSelectionModel().getSelectedItem()!="" && c.getSelectionModel().getSelectedItem()!=null){
+                        int tempIndex = c.getSelectionModel().getSelectedIndex();
+                        System.out.println("adding... : " + c.getSelectionModel().getSelectedItem() + " - " + c.getSelectionModel().getSelectedIndex());
+                        if(tempIndex==-1){
+                            authorsToCreateList.add((String)c.getSelectionModel().getSelectedItem());
+                        }
+                        else{
+                            authorIdsToReturn.add(allAuthors.get(tempIndex).getAuthorId());
+                        }
                     }
-                    else{
-                        authorIdsToReturn.add(allAuthors.get(tempIndex).getAuthorId());
-                    }
+                    else System.out.println("empty combobox");
                 }
 
                 authorStage.close();
@@ -313,7 +316,7 @@ public class InsertDialog{
         authorGridPane.add(authorListVBox, 0, 0);
 
         authorListVBox.getChildren().add(existingAuthorsComboBox);
-        VBox wrapButton = new VBox(addExistingAuthorButton);
+        VBox wrapButton = new VBox(plusAuthorButton);
         wrapButton.setAlignment(Pos.TOP_CENTER);
         wrapButton.setPadding(new Insets(5,5,5,5));
         authorGridPane.add(wrapButton,1,0);

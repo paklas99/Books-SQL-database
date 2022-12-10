@@ -79,9 +79,9 @@ public class Controller {
         }
     }
 
-    void handleAddBook(String isbn, String title, String published, String genre, int rating, String authors){
+    void handleAddBook(String isbn, String title, String published, String genre, int rating, ArrayList<String> authorsToCreate){
         try {
-            booksDb.addBook(isbn, title, published, genre, rating, authors);
+            booksDb.addBook(isbn, title, published, genre, rating, authorsToCreate);
         }catch (BooksDbException e){
             // TODO: add alert box
         }
@@ -100,8 +100,16 @@ public class Controller {
         }
     }
 
-    ArrayList<String> retrieveAllAuthors(){
-        ArrayList<String> allAuthors= null;
+    void handleRelateBookWithAuthor(String isbn, ArrayList<Integer> authorIds){
+        try{
+            booksDb.relateBookWithAuthor(isbn, authorIds);
+        }catch (BooksDbException e){
+            // TODO
+        }
+    }
+
+    ArrayList<Author> retrieveAllAuthors(){
+        ArrayList<Author> allAuthors= null;
         try{
             allAuthors = booksDb.retrieveAllAuthors();
         }catch (BooksDbException e){

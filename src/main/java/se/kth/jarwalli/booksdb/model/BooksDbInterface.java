@@ -39,7 +39,9 @@ public interface BooksDbInterface {
     public List<Book> searchBooksByISBN(String isbn) throws SQLException, BooksDbException;
     public List<Book> searchBookByAuthor(String author) throws BooksDbException, SQLException;
 
-    public boolean addBook(String isbn, String title, String published, String genre, int rating, String authors) throws BooksDbException;
+    public boolean addBook(String isbn, String title, String published, String genre, int rating, ArrayList<String> authors) throws BooksDbException;
     public boolean deleteBook(String isbn) throws BooksDbException;
-    public ArrayList<String> retrieveAllAuthors() throws BooksDbException;
+    public ArrayList<Author> retrieveAllAuthors() throws BooksDbException;
+
+    public boolean relateBookWithAuthor(String isbn, ArrayList<Integer> authorIds) throws BooksDbException;
 }

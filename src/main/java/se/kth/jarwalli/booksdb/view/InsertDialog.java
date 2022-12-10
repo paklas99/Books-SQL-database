@@ -86,6 +86,46 @@ public class InsertDialog{
         cancelAuthorButton = new Button("Cancel");
         okConfirmAuthorsButton = new Button("Add Authors");
 
+        authorStage = new Stage();
+        authorStage.initModality(Modality.APPLICATION_MODAL);
+        authorGridPane = new GridPane();
+        authorVBox = new VBox();
+
+        authorVBox.setPadding(new Insets(8,8,8,8));
+        authorScene = new Scene(authorVBox, 400, 300);
+        textFlowAuthors = new TextFlow(new Text("Choose existing author from the dropdown menu,or write the name of the new author."));
+        authorListVBox = new VBox(5);
+        authorListVBox.setPadding(new Insets(5,5,5,5));
+        authorListVBox.setPrefHeight(250);
+        authorVBox.setAlignment(Pos.CENTER);
+        authorStage.setTitle("Add Author");
+        authorGridPane.setPadding(new Insets(10, 10, 10, 10));
+        authorGridPane.setVgap(5);
+        authorGridPane.setHgap(5);
+        textFlowAuthors.setTextAlignment(TextAlignment.CENTER);
+        textFlowAuthors.autosize();
+        textFlowAuthors.setPadding(new Insets(8,8,8,8));
+
+        HBox buttonHbox = new HBox();
+        buttonHbox.setAlignment(Pos.CENTER);
+        buttonHbox.setSpacing(12);
+
+        // Add to Gridpane
+        authorVBox.getChildren().add(textFlowAuthors);
+        authorVBox.getChildren().add(authorGridPane);
+        authorVBox.getChildren().add(buttonHbox);
+        authorListVBox.setAlignment(Pos.TOP_CENTER);
+        authorGridPane.setAlignment(Pos.CENTER);
+        authorGridPane.add(authorListVBox, 0, 0);
+
+        authorListVBox.getChildren().add(existingAuthorsComboBox);
+        VBox wrapButton = new VBox(plusAuthorButton);
+        wrapButton.setAlignment(Pos.TOP_CENTER);
+        wrapButton.setPadding(new Insets(5,5,5,5));
+        authorGridPane.add(wrapButton,1,0);
+        buttonHbox.getChildren().addAll(cancelAuthorButton, okConfirmAuthorsButton);
+        authorStage.setScene(authorScene);
+
 
 
 
@@ -213,45 +253,7 @@ public class InsertDialog{
 
     public void addAuthorDialog(){
 
-        authorStage = new Stage();
-        authorStage.initModality(Modality.APPLICATION_MODAL);
-        authorGridPane = new GridPane();
-        authorVBox = new VBox();
 
-        authorVBox.setPadding(new Insets(8,8,8,8));
-        authorScene = new Scene(authorVBox, 400, 300);
-        textFlowAuthors = new TextFlow(new Text("Choose existing author from the dropdown menu,or write the name of the new author."));
-        authorListVBox = new VBox(5);
-        authorListVBox.setPadding(new Insets(5,5,5,5));
-        authorListVBox.setPrefHeight(250);
-        authorVBox.setAlignment(Pos.CENTER);
-        authorStage.setTitle("Add Author");
-        authorGridPane.setPadding(new Insets(10, 10, 10, 10));
-        authorGridPane.setVgap(5);
-        authorGridPane.setHgap(5);
-        textFlowAuthors.setTextAlignment(TextAlignment.CENTER);
-        textFlowAuthors.autosize();
-        textFlowAuthors.setPadding(new Insets(8,8,8,8));
-
-        HBox buttonHbox = new HBox();
-        buttonHbox.setAlignment(Pos.CENTER);
-        buttonHbox.setSpacing(12);
-
-        // Add to Gridpane
-        authorVBox.getChildren().add(textFlowAuthors);
-        authorVBox.getChildren().add(authorGridPane);
-        authorVBox.getChildren().add(buttonHbox);
-        authorListVBox.setAlignment(Pos.TOP_CENTER);
-        authorGridPane.setAlignment(Pos.CENTER);
-        authorGridPane.add(authorListVBox, 0, 0);
-
-        authorListVBox.getChildren().add(existingAuthorsComboBox);
-        VBox wrapButton = new VBox(plusAuthorButton);
-        wrapButton.setAlignment(Pos.TOP_CENTER);
-        wrapButton.setPadding(new Insets(5,5,5,5));
-        authorGridPane.add(wrapButton,1,0);
-        buttonHbox.getChildren().addAll(cancelAuthorButton, okConfirmAuthorsButton);
-        authorStage.setScene(authorScene);
         authorStage.showAndWait();
 
 

@@ -262,6 +262,7 @@ public class BooksDbImpl implements BooksDbInterface {
             if(con!=null) {
                 try {
                     con.rollback();
+                    System.out.println("Rollback!");
                 } catch (SQLException ex) {
                     throw new BooksDbException(ex.getMessage(), ex);
                 }

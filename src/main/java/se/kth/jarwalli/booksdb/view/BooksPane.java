@@ -177,6 +177,11 @@ public class BooksPane extends VBox {
         MenuItem ratingItem = new MenuItem("Rating");
         searchMenu.getItems().addAll(titleItem, isbnItem, authorItem, genreItem, ratingItem);
 
+        Menu loginMenu = new Menu("Authentication");
+        MenuItem login = new MenuItem("Login");
+        MenuItem logout = new MenuItem("Logout");
+        loginMenu.getItems().addAll(login, logout);
+
 
         Menu manageMenu = new Menu("Manage");
         MenuItem addItem = new MenuItem("Add");
@@ -185,7 +190,7 @@ public class BooksPane extends VBox {
         manageMenu.getItems().addAll(addItem, removeItem, updateItem);
 
         menuBar = new MenuBar();
-        menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu);
+        menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu, loginMenu);
     }
 
 

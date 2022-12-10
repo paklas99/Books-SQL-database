@@ -18,7 +18,7 @@ import static javafx.scene.control.Alert.AlertType.*;
  *
  * @author anderslm@kth.se
  */
-public class Controller {
+public class Controller  {
 
     private final BooksPane booksView; // view
     private final BooksDbInterface booksDb; // model

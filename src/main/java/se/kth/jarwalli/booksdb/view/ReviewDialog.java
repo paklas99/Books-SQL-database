@@ -39,7 +39,7 @@ public class ReviewDialog {
         TextField reviewTextField = new TextField();
 
         //add nodes to gridPane
-        gridPane.add(new Label("Review"), 0, 0);
+        gridPane.add(new Label("Enter a review"), 0, 0);
         gridPane.add(reviewTextField, 0,1);
         gridPane.add((okButton),0, 2);
 
@@ -48,11 +48,12 @@ public class ReviewDialog {
             public void handle(ActionEvent actionEvent) {
                 reviewText = reviewTextField.getCharacters().toString();
                 stage.close();
+
             }
         });
         stage.setScene(scene);
     }
-    public void showLoginDialog(){
+    public void showReviewDialog(){
         stage.showAndWait();
     }
 }

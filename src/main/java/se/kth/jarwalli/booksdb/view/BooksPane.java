@@ -40,7 +40,7 @@ public class BooksPane extends VBox {
     private InsertDialog insertDialog;
     private UpdateDialog updateDialog;
     private LoginDialog loginDialog;
-
+    private ReviewDialog reviewDialog;
     private MenuBar menuBar;
 
     public BooksPane(BooksDbImpl booksDb) {
@@ -49,6 +49,7 @@ public class BooksPane extends VBox {
         insertDialog = new InsertDialog(controller);
         updateDialog = new UpdateDialog(controller);
         loginDialog = new LoginDialog(controller);
+        reviewDialog = new ReviewDialog(controller);
     }
 
     /**
@@ -290,7 +291,7 @@ public class BooksPane extends VBox {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-
+                    reviewDialog.showReviewDialog();
                 }
             }
         };

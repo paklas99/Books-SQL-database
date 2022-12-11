@@ -50,5 +50,5 @@ public interface BooksDbInterface {
     public boolean updateBook(int rating, String isbn) throws BooksDbException;
 
     public boolean login(String username, String password, String database) throws BooksDbException;
-    public boolean review(String review) throws BooksDbException;
+    public boolean addReview(String review) throws BooksDbException;
 }

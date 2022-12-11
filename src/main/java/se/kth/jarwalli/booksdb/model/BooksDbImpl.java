@@ -248,8 +248,8 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
-    public boolean review(String review) throws BooksDbException {
-        String sql = "UPDATE Book SET rating = ?" + " WHERE isbn = ?;";
+    public boolean addReview(String review) throws BooksDbException {
+        String sql = "INSERT Book SET rating = ?" + " WHERE isbn = ?;";
         try (PreparedStatement pstmt = con.prepareStatement(sql)){
             pstmt.setString(1, review);
             int n = pstmt.executeUpdate();

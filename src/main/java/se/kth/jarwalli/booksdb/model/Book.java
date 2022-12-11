@@ -18,6 +18,7 @@ public class Book {
     private String storyLine = "";
     private String genre;
     private Integer rating;
+
     // TODO: 
     // Add authors, as a separate class(!), and corresponding methods, to your implementation
     // as well, i.e. "private ArrayList<Author> authors;"
@@ -55,6 +56,10 @@ public class Book {
     public String getPublished() { return published; }
     public String getStoryLine() { return storyLine; }
     public int getRating() { return rating; }
+
+    public String getGenre(){
+        return genre;
+    }
 
     public String getAuthors(){
         String names = "";

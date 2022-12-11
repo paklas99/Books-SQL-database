@@ -235,11 +235,12 @@ public class Controller {
     }
 
     void retrieveAllAuthors() {
-        new Thread("handleRetriveAllAuthorsThread"){
+        new Thread("handleRetriveAllAuthorsThread") {
 
-                ArrayList<Author> allAuthors =new ArrayList<>();
+            ArrayList<Author> allAuthors = new ArrayList<>();
+
             @Override
-            public void run(){
+            public void run() {
                 try {
                     allAuthors = booksDb.retrieveAllAuthors();
                     javafx.application.Platform.runLater(
@@ -263,6 +264,14 @@ public class Controller {
                 }
             }
         }.start();
+    }
+
+    void handleReview(String text){
+        try {
+            booksDb.addReview("Test");
+        } catch (BooksDbException e) {
+
+        }
     }
 
 }

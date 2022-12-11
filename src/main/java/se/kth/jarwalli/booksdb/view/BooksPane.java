@@ -294,7 +294,15 @@ public class BooksPane extends VBox {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-                    reviewDialog.showReviewDialog();
+                    Book tempBook = booksTable.getSelectionModel().getSelectedItem();
+                    if(tempBook!=null){
+
+                    }
+                    else{
+                        showAlertAndWait("You need to select the book you want to remove from the database.", Alert.AlertType.INFORMATION);
+                    }
+
+                    reviewDialog.showReviewDialog(tempBook);
                 }
             }
         };

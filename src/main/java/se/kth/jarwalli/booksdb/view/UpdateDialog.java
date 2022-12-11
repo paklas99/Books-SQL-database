@@ -16,7 +16,6 @@ import se.kth.jarwalli.booksdb.model.Book;
 
 public class UpdateDialog {
     private Stage stage;
-    private String storyLine;
     private int rating;
     private String isbn;
     private Button okButton;
@@ -54,7 +53,6 @@ public class UpdateDialog {
             @Override
             public void handle(ActionEvent actionEvent) {
                 rating = (int) ratingComboBox.getValue();
-                storyLine = storyTextField.getCharacters().toString();
                 controller.handleUpdateBook(rating, isbn);
                 System.out.println(rating);
                 stage.close();

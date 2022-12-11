@@ -6,6 +6,7 @@ import se.kth.jarwalli.booksdb.model.*;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -266,12 +267,27 @@ public class Controller {
         }.start();
     }
 
-    void handleReview(String text){
-        try {
-            booksDb.addReview("Test");
-        } catch (BooksDbException e) {
 
-        }
+
+    void handleReview(String isbn, String review) {
+        new Thread("handleReviewThread"){
+            @Override
+            public void run(){
+                try {
+                    String username = booksDb.retriveCurrentUser();
+                    booksDb.addReview(isbn, username, LocalDate.now().toString(), review);
+                } catch (BooksDbException e) {
+                    javafx.application.Platform.runLater(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    booksView.showAlertAndWait("Your review was not published. Remember that you can only review once per book", ERROR);
+
+                                }
+                            });
+                }
+            }
+        }.start();
     }
 
 }

@@ -11,12 +11,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import se.kth.jarwalli.booksdb.model.Book;
 
 public class ReviewDialog {
 
     private Stage stage;
     private Button okButton;
     private String reviewText;
+
+    private String isbn;
 
 
 
@@ -47,13 +50,15 @@ public class ReviewDialog {
             @Override
             public void handle(ActionEvent actionEvent) {
                 reviewText = reviewTextField.getCharacters().toString();
+                controller.handleReview(isbn, reviewText);
                 stage.close();
 
             }
         });
         stage.setScene(scene);
     }
-    public void showReviewDialog(){
+    public void showReviewDialog(Book tempbook){
+        isbn = tempbook.getIsbn();
         stage.showAndWait();
     }
 }

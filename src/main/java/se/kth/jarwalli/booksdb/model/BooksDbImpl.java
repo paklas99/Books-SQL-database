@@ -230,11 +230,31 @@ public class BooksDbImpl implements BooksDbInterface {
         return true;
     }
 
+    public String retriveCurrentUser() throws BooksDbException {
+        String sql = "SELECT current_user()";
+        String tmpUser = "";
+        try (Statement stmt = con.createStatement()) {
+            ResultSet resultset = stmt.executeQuery(sql);
+            while (resultset.next()){
+                tmpUser = resultset.getString("current_user()");
+            }
+            String[] substringOfUser = tmpUser.split("@", 0);
+            tmpUser = substringOfUser[0];
+            System.out.println(tmpUser);
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+        }
+        return tmpUser;
+    }
+
     @Override
-    public boolean addReview(String review) throws BooksDbException {
-        String sql = "INSERT Book SET rating = ?" + " WHERE isbn = ?;";
+    public boolean addReview(String isbn, String username, String date, String review ) throws BooksDbException {
+        String sql = "INSERT INTO review VALUES (?,?,?,?)";
         try (PreparedStatement pstmt = con.prepareStatement(sql)){
-            pstmt.setString(1, review);
+            pstmt.setString(1, isbn);
+            pstmt.setString(2, username);
+            pstmt.setString(3, date);
+            pstmt.setString(4, review);
             int n = pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(), e);

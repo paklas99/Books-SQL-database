@@ -84,12 +84,11 @@ public class BooksDbImpl implements BooksDbInterface {
 
     @Override
     public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException {
-        ArrayList<Book> tmp = new ArrayList<>();
-        try {
-            String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
-                    + " WHERE title LIKE ? GROUP BY book.isbn";
-            PreparedStatement pstmt = con.prepareStatement(sql);
+        ArrayList<Book> tmp;
+        String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
+                + " WHERE title LIKE ? GROUP BY book.isbn";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)){
             pstmt.setString(1, "%" + searchTitle + "%");
             ResultSet pResultset = pstmt.executeQuery();
             retrieveBooks(pResultset);

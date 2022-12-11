@@ -248,6 +248,19 @@ public class BooksDbImpl implements BooksDbInterface {
     }
 
     @Override
+    public boolean review(String review) throws BooksDbException {
+        String sql = "UPDATE Book SET rating = ?" + " WHERE isbn = ?;";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)){
+            pstmt.setString(1, review);
+            int n = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new BooksDbException(e.getMessage(), e);
+        }
+        return true;
+
+    }
+
+    @Override
     public boolean addBook(String isbn, String title, String datePublished, String genre, Integer rating, ArrayList<String> authors) throws BooksDbException {
         ArrayList<Integer> authorIdList = new ArrayList<>();
         // Step 1: Create Book

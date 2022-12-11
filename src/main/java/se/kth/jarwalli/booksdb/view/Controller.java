@@ -140,6 +140,18 @@ public class Controller {
         }
     }
 
+    void handleReview(String text){
+        try {
+            /*Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to update " + isbn + " from the database?", CONFIRMATION);
+            if (result.isPresent() && result.get()== ButtonType.CANCEL){
+                return;
+            }*/
+            booksDb.review("test");
+        } catch (BooksDbException e) {
+
+        }
+    }
+
     ArrayList<Author> retrieveAllAuthors() {
         ArrayList<Author> allAuthors = null;
         try {

@@ -186,13 +186,17 @@ public class BooksPane extends VBox {
         MenuItem updateItem = new MenuItem("Update");
         manageMenu.getItems().addAll(addItem, removeItem, updateItem);
 
+        Menu reviewMenu = new Menu("Review");
+        MenuItem review = new MenuItem("review");
+        reviewMenu.getItems().addAll(review);
+
         Menu authenticationMenu = new Menu("Authentication");
         MenuItem login = new MenuItem("login");
         authenticationMenu.getItems().addAll(login);
 
 
         menuBar = new MenuBar();
-        menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu, authenticationMenu);
+        menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu, authenticationMenu,reviewMenu);
     }
 
 
@@ -280,6 +284,17 @@ public class BooksPane extends VBox {
             }
         };
         menuBar.getMenus().get(0).getItems().get(2).addEventHandler(ActionEvent.ACTION, disconnectHandler);
+
+        EventHandler<ActionEvent> reviewHandler = new EventHandler<>() {
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (actionEvent.getSource() instanceof MenuItem) {
+
+                }
+            }
+        };
+        menuBar.getMenus().get(4).getItems().get(0).addEventHandler(ActionEvent.ACTION, reviewHandler);
 
         EventHandler<ActionEvent> menuAddBookHandler = new EventHandler<>() {
 

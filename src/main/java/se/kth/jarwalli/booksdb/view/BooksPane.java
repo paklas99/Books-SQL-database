@@ -344,11 +344,13 @@ public class BooksPane extends VBox {
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
                     Book tempBook = booksTable.getSelectionModel().getSelectedItem();
-
-                    controller.handleUpdateBook(tempBook.getRating(), tempBook.getIsbn());
-                    updateDialog.showUpdateDialog(tempBook);
-
-
+                    if(tempBook!=null){
+                        controller.handleUpdateBook(tempBook.getRating(), tempBook.getIsbn());
+                        updateDialog.showUpdateDialog(tempBook);
+                    }
+                    else{
+                        showAlertAndWait("You need to select the book you want to update from the database.", Alert.AlertType.INFORMATION);
+                    }
                 }
             }
         };

@@ -45,9 +45,7 @@ public class UpdateDialog {
         //Add nodes to gridPane
         gridPane.add(new Label("Update the Rating of a book"), 0 ,1);
         gridPane.add(ratingComboBox,0,2);
-        gridPane.add(new Label("Update the storyline of a book"), 0 ,3);
-        gridPane.add(storyTextField,0,4);
-        gridPane.add(okButton, 0 , 5);
+        gridPane.add(okButton, 0 , 3);
 
         okButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override

@@ -105,11 +105,11 @@ public class BooksDbImpl implements BooksDbInterface {
     @Override
     public List<Book> searchBooksByISBN(String searchIsbn) throws BooksDbException {
         ArrayList<Book> tmp = new ArrayList<>();
-        try {
-            String sql = "SELECT  book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
-                    + " WHERE book.isbn LIKE ? GROUP BY book.isbn";
-            PreparedStatement pstmt = con.prepareStatement(sql);
+        String sql = "SELECT  book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
+                + " WHERE book.isbn LIKE ? GROUP BY book.isbn";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)){
+
             pstmt.setString(1, "%" + searchIsbn + "%");
             ResultSet pResultset = pstmt.executeQuery();
             retrieveBooks(pResultset);
@@ -127,12 +127,11 @@ public class BooksDbImpl implements BooksDbInterface {
     @Override
     public List<Book> searchBookByAuthor(String searchAuthor) throws BooksDbException {
         ArrayList<Book> tmp;
-        PreparedStatement pstmt = null;
-        try {
-            String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
-                    + " GROUP BY book.isbn HAVING fullname LIKE ?";
-            pstmt = con.prepareStatement(sql);
+        String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
+                + " GROUP BY book.isbn HAVING fullname LIKE ?";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)){
+
             pstmt.setString(1, "%" + searchAuthor + "%");
             ResultSet pResultset = pstmt.executeQuery();
 
@@ -149,12 +148,12 @@ public class BooksDbImpl implements BooksDbInterface {
     @Override
     public List<Book> searchBookByGenre(String searchGenre) throws BooksDbException {
         ArrayList<Book> tmp;
-        PreparedStatement pstmt = null;
-        try {
-            String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
-                    + " GROUP BY book.isbn HAVING genre LIKE ?";
-            pstmt = con.prepareStatement(sql);
+
+        String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
+                + " GROUP BY book.isbn HAVING genre LIKE ?";
+        try (PreparedStatement pstmt = con.prepareStatement(sql)){
+
             pstmt.setString(1, "%" + searchGenre + "%");
             ResultSet pResultset = pstmt.executeQuery();
 
@@ -170,12 +169,11 @@ public class BooksDbImpl implements BooksDbInterface {
     @Override
     public List<Book> searchBookByRating(int searchRating) throws BooksDbException {
         ArrayList<Book> tmp;
-        PreparedStatement pstmt = null;
-        try {
-            String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
-                    + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
-                    + " GROUP BY book.isbn HAVING rating LIKE ?";
-            pstmt = con.prepareStatement(sql);
+        String sql = "SELECT book.title, book.isbn, GROUP_CONCAT(author.fullname) AS fullname, book.datePublished, book.rating, book.genre"
+                + " FROM Book LEFT JOIN wrote ON book.isbn=wrote.isbn LEFT JOIN author ON author.authorId= wrote.authorId"
+                + " GROUP BY book.isbn HAVING rating LIKE ?";
+        try (PreparedStatement pstmt = con.prepareStatement(sql);){
+
             pstmt.setString(1, "%" + searchRating + "%");
             ResultSet pResultset = pstmt.executeQuery();
 
@@ -229,7 +227,6 @@ public class BooksDbImpl implements BooksDbInterface {
         } catch (SQLException | ClassNotFoundException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
-
         return true;
     }
 

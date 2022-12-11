@@ -25,10 +25,28 @@ public class Book {
         authors = new ArrayList<>();
     }
 
+    /** Gets the authors in a string separated by commas.
+     *
+     * @return Returns the authors in a string separated by commas.
+     */
+    public String getAuthors(){
+        // DONT TAKE AWAY THIS METHOD! It is used by the PropertyValueFactory at bookPane
+        String names = "";
+        for(int i=0; i<authors.size(); i++){
+            names += authors.get(i).getFullName();
+            if((i+1)< authors.size()) names +=", ";
+        }
+        return names;
+    }
+
     public String getIsbn() { return isbn; }
     public String getTitle() { return title; }
     public String getPublished() { return published; }
-    public int getRating() { return rating; }
+    public Integer getRating() { return rating; }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
 
     public String getGenre(){
         return genre;

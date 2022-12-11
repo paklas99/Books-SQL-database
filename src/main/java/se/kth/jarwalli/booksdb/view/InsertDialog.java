@@ -15,6 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import se.kth.jarwalli.booksdb.model.Author;
+import se.kth.jarwalli.booksdb.model.Book;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -191,14 +192,15 @@ public class InsertDialog{
                 System.out.println(title + genre + datePublished + isbn + rating);
                 if(title!=null && genre!=null && datePicker.getValue()!=null && isbn!=null){
                     datePublished = datePicker.getValue().toString();
-                    controller.handleAddBook(isbn, title, datePublished, genre, rating, authorsToCreateList, authorIdsToReturn);
+                    Book bookToReturn = new Book(isbn, title, datePublished, genre, rating);
+                    controller.handleAddBook(bookToReturn, authorsToCreateList, authorIdsToReturn);
                     stage.close();
-                    // TODO
                     titleTextField.clear();
                     genreTextField.clear();
                     datePicker.setValue(null);
                     ratingComboBox.getSelectionModel().clearSelection();
                     genreComboBox.getSelectionModel().clearSelection();
+                    existingAuthorsComboBox.getSelectionModel().clearSelection();
                     dateTextField.clear();
                     isbnTextField.clear();
                     existingAuthorsComboBox.getSelectionModel().clearSelection();

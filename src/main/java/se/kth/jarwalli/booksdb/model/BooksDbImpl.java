@@ -233,41 +233,40 @@ public class BooksDbImpl implements BooksDbInterface {
 
     /**
      * Delete a book from the database
-     * @param isbn The isbn of the book to delete
+     * @param book to be deleted
      * @return returns the boolean representation if the book got deleted or not
      * @throws BooksDbException
      */
     @Override
-    public boolean deleteBook(String isbn) throws BooksDbException {
+    public Book deleteBook(Book book) throws BooksDbException {
         String sql = "DELETE FROM Book WHERE isbn = ?";
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, isbn);
+            pstmt.setString(1, book.getIsbn());
             int n = pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
-        return true;
+        return book;
     }
 
 
     /**
      * Updates the rating of a book
-     * @param rating the new rating value
-     * @param isbn the isbn of the book to update
+     * @param book Book to be updated
      * @return returns the boolean representation if the update succeeded or not
      * @throws BooksDbException
      */
     @Override
-    public boolean updateBook(int rating, String isbn) throws BooksDbException{
+    public Book updateBook(Book book) throws BooksDbException{
         String sql = "UPDATE Book SET rating = ?" + " WHERE isbn = ?;";
         try (PreparedStatement pstmt = con.prepareStatement(sql)){
-            pstmt.setInt(1, rating);
-            pstmt.setString(2, isbn);
+            pstmt.setInt(1, book.getRating());
+            pstmt.setString(2, book.getIsbn());
             int n = pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
-        return true;
+        return book;
     }
 
     /**
@@ -279,7 +278,7 @@ public class BooksDbImpl implements BooksDbInterface {
      * @throws BooksDbException
      */
 
-    public boolean login(String user, String pwd, String database) throws BooksDbException {
+    public void login(String user, String pwd, String database) throws BooksDbException {
         System.out.println(user + ", *********");
         String server
                 = "jdbc:mysql://localhost:3306/" + database
@@ -291,7 +290,6 @@ public class BooksDbImpl implements BooksDbInterface {
         } catch (SQLException | ClassNotFoundException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
-        return true;
     }
 
     /**
@@ -317,57 +315,50 @@ public class BooksDbImpl implements BooksDbInterface {
 
     /**
      * adds a review to a book
-     * @param isbn The isbn of the book
-     * @param username The username of the user currently logged in
-     * @param date The day of the review
      * @param review The review to be added
      * @return returns the boolean representation if a review was added or not
      * @throws BooksDbException
      */
     @Override
-    public boolean addReview(String isbn, String username, String date, String review ) throws BooksDbException {
+    public Review addReview(Review review ) throws BooksDbException {
         String sql = "INSERT INTO review VALUES (?,?,?,?)";
         try (PreparedStatement pstmt = con.prepareStatement(sql)){
-            pstmt.setString(1, isbn);
-            pstmt.setString(2, username);
-            pstmt.setString(3, date);
-            pstmt.setString(4, review);
+            pstmt.setString(1, review.getIsbn());
+            pstmt.setString(2, review.getUser());
+            pstmt.setString(3, review.getReviewDate());
+            pstmt.setString(4, review.getText());
             int n = pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
-        return true;
+        return review;
 
     }
 
     /**
      * Adds a book to the database with a transaction.
-     * @param isbn The isbn of the book
-     * @param title The title of the book
-     * @param datePublished The data the book was published
-     * @param genre The genre of the book
-     * @param rating The rating of the book
+     * @param book to be added
      * @param authors The author(s) of the book
      * @param authorIdList A list of the authordId's of the authors
      * @return returns the boolean representation if a new book was added or not
      * @throws BooksDbException
      */
     @Override
-    public boolean addBook(String isbn, String title, String datePublished, String genre, Integer rating, ArrayList<String> authors, ArrayList<Integer> authorIdList) throws BooksDbException {
+    public Book addBook(Book book, ArrayList<String> authors, ArrayList<Integer> authorIdList) throws BooksDbException {
         // Step 1: Create Book
         String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?)";
         PreparedStatement pstmt = null;
         try {
             pstmt = con.prepareStatement(sql);
             con.setAutoCommit(false);
-            pstmt.setString(1, isbn);
-            pstmt.setString(2, title);
-            pstmt.setString(3, datePublished);
-            pstmt.setString(4, genre);
-            if(rating==null){
+            pstmt.setString(1, book.getIsbn());
+            pstmt.setString(2, book.getTitle());
+            pstmt.setString(3, book.getPublished());
+            pstmt.setString(4, book.getGenre());
+            if(book.getRating()==null){
                 pstmt.setNull(5, Types.INTEGER);
             }
-            else {pstmt.setInt(5, rating);}
+            else {pstmt.setInt(5, book.getRating());}
             int n = pstmt.executeUpdate();
 
             // Step 2: Create Author
@@ -388,7 +379,7 @@ public class BooksDbImpl implements BooksDbInterface {
             for (int i = 0; i < authorIdList.size(); i++) {
                 pstmt = con.prepareStatement(sql3);
                 pstmt.setInt(1, authorIdList.get(i));
-                pstmt.setString(2, isbn);
+                pstmt.setString(2, book.getIsbn());
                 pstmt.executeUpdate();
             }
             con.commit();
@@ -417,7 +408,7 @@ public class BooksDbImpl implements BooksDbInterface {
                 throw new BooksDbException(e.getMessage(), e);
             }
         }
-        return true;
+        return book;
     }
 
     /**

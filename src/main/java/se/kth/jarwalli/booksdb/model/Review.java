@@ -4,10 +4,10 @@ public class Review {
     private String text;
     private String user;
     private String reviewDate;
-    private int isbn;
+    private String isbn;
 
 
-    public Review(String text, String user, String reviewDate, int isbn) {
+    public Review(String text, String user, String reviewDate, String isbn) {
         this.text = text;
         this.user = user;
         this.reviewDate = reviewDate;
@@ -26,7 +26,7 @@ public class Review {
         return reviewDate;
     }
 
-    public int getIsbn() {
+    public String getIsbn() {
         return isbn;
     }
 

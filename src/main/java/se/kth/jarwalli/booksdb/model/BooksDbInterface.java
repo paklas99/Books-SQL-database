@@ -70,15 +70,22 @@ public interface BooksDbInterface {
      * @throws BooksDbException
      */
     public List<Book> searchBookByRating(int searchRating) throws BooksDbException;
-
-    public boolean addBook(String isbn, String title, String published, String genre, Integer rating, ArrayList<String> authors, ArrayList<Integer> AuthorIdList) throws BooksDbException;
+    /**
+     * Adds a book to the database with a transaction.
+     * @param book to be added
+     * @param authors The author(s) of the book
+     * @param authorIdList A list of the authordId's of the authors
+     * @return returns the boolean representation if a new book was added or not
+     * @throws BooksDbException
+     */
+    public Book addBook(Book book, ArrayList<String> authors, ArrayList<Integer> authorIdList) throws BooksDbException;
     /**
      * Delete a book from the database
-     * @param isbn The isbn of the book to delete
+     * @param book to be deleted
      * @return returns the boolean representation if the book got deleted or not
      * @throws BooksDbException
      */
-    public boolean deleteBook(String isbn) throws BooksDbException;
+    public Book deleteBook(Book book) throws BooksDbException;
     /**
      * Gets a list of all the authors available in the database to be shown as options in the UI when adding a author to a book
      * @return The list of Authors
@@ -87,12 +94,11 @@ public interface BooksDbInterface {
     public ArrayList<Author> retrieveAllAuthors() throws BooksDbException;
     /**
      * Updates the rating of a book
-     * @param rating the new rating value
-     * @param isbn the isbn of the book to update
+     * @param book Book to be updated
      * @return returns the boolean representation if the update succeeded or not
      * @throws BooksDbException
      */
-    public boolean updateBook(int rating, String isbn) throws BooksDbException;
+    public Book updateBook(Book book) throws BooksDbException;
     /**
      * Logs in a user
      * @param user the user to be logged in
@@ -101,17 +107,14 @@ public interface BooksDbInterface {
      * @return returns the boolean representation if the login succeeded or not
      * @throws BooksDbException
      */
-    public boolean login(String user, String pwd, String database) throws BooksDbException;
+    public void login(String user, String pwd, String database) throws BooksDbException;
     /**
      * adds a review to a book
-     * @param isbn The isbn of the book
-     * @param username The username of the user currently logged in
-     * @param date The day of the review
      * @param review The review to be added
      * @return returns the boolean representation if a review was added or not
      * @throws BooksDbException
      */
-    public boolean addReview(String isbn, String username, String date, String review) throws BooksDbException;
+    public Review addReview(Review review ) throws BooksDbException;
     /**
      * Gives the user that is currently logged in
      * @return The user that is currently logged in

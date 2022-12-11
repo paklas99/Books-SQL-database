@@ -51,6 +51,7 @@ public class ReviewDialog {
             public void handle(ActionEvent actionEvent) {
                 reviewText = reviewTextField.getCharacters().toString();
                 controller.handleReview(isbn, reviewText);
+                reviewTextField.clear();
                 stage.close();
 
             }

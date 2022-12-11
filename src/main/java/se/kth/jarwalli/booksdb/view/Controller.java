@@ -1,5 +1,6 @@
 package se.kth.jarwalli.booksdb.view;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import se.kth.jarwalli.booksdb.model.*;
@@ -147,18 +148,19 @@ public class Controller {
     }
 
 
-    void handleAddBook(String isbn, String title, String published, String genre, Integer rating, ArrayList<String> authorsToCreate, ArrayList<Integer> existingAuthorIds){
+    void handleAddBook(Book book, ArrayList<String> authorsToCreate, ArrayList<Integer> existingAuthorIds){
         new Thread ("handleAddBookThread"){
             @Override
             public void run() {
                 try {
-                    booksDb.addBook(isbn, title, published, genre, rating, authorsToCreate, existingAuthorIds);
+                    booksDb.addBook(book, authorsToCreate, existingAuthorIds);
                 }catch (BooksDbException e){
-                    javafx.application.Platform.runLater(
+                    Platform.runLater(
                             new Runnable() {
                                 @Override
                                 public void run() {
                                     booksView.showAlertAndWait("Something went wrong and your book has not been added to the database", ERROR);
+                                    System.out.println(e.getMessage());
                                 }
                             });
                 }
@@ -168,8 +170,8 @@ public class Controller {
 
 
 
-    void handleDeleteBook(String isbn, String title) {
-        Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to delete " + title + " from the database?", CONFIRMATION);
+    void handleDeleteBook(Book book) {
+        Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to delete " + book.getTitle() + " from the database?", CONFIRMATION);
         if (result.isPresent() && result.get() == ButtonType.CANCEL) {
             return;
         }
@@ -177,7 +179,7 @@ public class Controller {
             @Override
             public void run(){
                 try {
-                    booksDb.deleteBook(isbn);
+                    booksDb.deleteBook(book);
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
                             new Runnable() {
@@ -194,12 +196,12 @@ public class Controller {
         booksView.clearBooks();
     }
 
-    void handleUpdateBook(int rating, String isbn) {
+    void handleUpdateBook(Book book) {
         new Thread("handleUpdateBookThread"){
             @Override
             public void run(){
                 try {
-                    booksDb.updateBook(rating, isbn);
+                    booksDb.updateBook(book);
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
                             new Runnable() {
@@ -269,13 +271,13 @@ public class Controller {
 
 
 
-    void handleReview(String isbn, String review) {
+    void handleReview(String isbn, String text) {
         new Thread("handleReviewThread"){
             @Override
             public void run(){
                 try {
                     String username = booksDb.retriveCurrentUser();
-                    booksDb.addReview(isbn, username, LocalDate.now().toString(), review);
+                    booksDb.addReview(new Review(text, username, LocalDate.now().toString(), isbn ));
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
                             new Runnable() {

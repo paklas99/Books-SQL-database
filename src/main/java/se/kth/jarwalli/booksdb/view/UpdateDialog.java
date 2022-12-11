@@ -15,9 +15,8 @@ import javafx.stage.Stage;
 import se.kth.jarwalli.booksdb.model.Book;
 
 public class UpdateDialog {
+    private Book book;
     private Stage stage;
-    private int rating;
-    private String isbn;
     private Button okButton;
     private ComboBox ratingComboBox;
 
@@ -50,9 +49,8 @@ public class UpdateDialog {
         okButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                rating = (int) ratingComboBox.getValue();
-                controller.handleUpdateBook(rating, isbn);
-                System.out.println(rating);
+                book.setRating((Integer)ratingComboBox.getValue());
+                controller.handleUpdateBook(book);
                 stage.close();
                 ratingComboBox.getSelectionModel().clearSelection();
                 storyTextField.clear();
@@ -64,7 +62,8 @@ public class UpdateDialog {
     }
 
     public void showUpdateDialog(Book tempBook){
-        isbn = tempBook.getIsbn();
+        this.book = tempBook;
         stage.showAndWait();
+
     }
 }

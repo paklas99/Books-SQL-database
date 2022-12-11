@@ -326,7 +326,7 @@ public class BooksPane extends VBox {
                 if (actionEvent.getSource() instanceof MenuItem) {
                     Book tempBook = booksTable.getSelectionModel().getSelectedItem();
                     if(tempBook!=null){
-                        controller.handleDeleteBook(tempBook.getIsbn(), tempBook.getTitle());
+                        controller.handleDeleteBook(tempBook);
                     }
                     else{
                         showAlertAndWait("You need to select the book you want to remove from the database.", Alert.AlertType.INFORMATION);
@@ -345,7 +345,7 @@ public class BooksPane extends VBox {
                 if (actionEvent.getSource() instanceof MenuItem) {
                     Book tempBook = booksTable.getSelectionModel().getSelectedItem();
                     if(tempBook!=null){
-                        controller.handleUpdateBook(tempBook.getRating(), tempBook.getIsbn());
+                        controller.handleUpdateBook(tempBook);
                         updateDialog.showUpdateDialog(tempBook);
                     }
                     else{

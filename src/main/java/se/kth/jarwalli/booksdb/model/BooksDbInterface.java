@@ -120,5 +120,5 @@ public interface BooksDbInterface {
      * @return The user that is currently logged in
      * @throws BooksDbException
      */
-    public String retriveCurrentUser() throws BooksDbException;
+    public String retrieveCurrentUser() throws BooksDbException;
 }

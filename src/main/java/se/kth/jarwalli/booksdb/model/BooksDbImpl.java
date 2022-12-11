@@ -297,7 +297,7 @@ public class BooksDbImpl implements BooksDbInterface {
      * @return The user that is currently logged in
      * @throws BooksDbException
      */
-    public String retriveCurrentUser() throws BooksDbException {
+    public String retrieveCurrentUser() throws BooksDbException {
         String sql = "SELECT current_user()";
         String tmpUser = "";
         try (Statement stmt = con.createStatement()) {

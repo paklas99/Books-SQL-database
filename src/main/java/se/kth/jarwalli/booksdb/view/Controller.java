@@ -276,7 +276,7 @@ public class Controller {
             @Override
             public void run(){
                 try {
-                    String username = booksDb.retriveCurrentUser();
+                    String username = booksDb.retrieveCurrentUser();
                     booksDb.addReview(new Review(text, username, LocalDate.now().toString(), isbn ));
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(

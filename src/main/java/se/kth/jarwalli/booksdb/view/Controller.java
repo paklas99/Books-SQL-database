@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static javafx.scene.control.Alert.AlertType.*;
 
@@ -73,8 +74,7 @@ public class Controller {
         try {
             booksDb.connect("Library");
         } catch (BooksDbException e) {
-            System.out.println("caught!");
-            // TODO: add alert box
+            booksView.showAlertAndWait("Connection Failed!", ERROR);
         }
     }
 
@@ -82,49 +82,54 @@ public class Controller {
         try {
             booksDb.disconnect();
         } catch (BooksDbException e) {
-            // TODO: Add alert box
+            booksView.showAlertAndWait("Disconnect failed", ERROR);
         }
     }
 
 
-    void handleAddBook(String isbn, String title, String published, String genre, Integer rating, ArrayList<String> authorsToCreate){
-        try {
-            booksDb.addBook(isbn, title, published, genre, rating, authorsToCreate);
-        }catch (BooksDbException e){
+    void handleAddBook(String isbn, String title, String published, String genre, Integer rating, ArrayList<String> authorsToCreate, ArrayList<Integer> existingAuthorIds){
+        Thread t1 = new Thread ("handleAddBookThread"){
+            @Override
+            public void run() {
+                System.out.println("NU KÖRS ADDBOOk Thread!!!" + currentThread().getName());
+                try {
+                    booksDb.addBook(isbn, title, published, genre, rating, authorsToCreate, existingAuthorIds);
+                    TimeUnit.SECONDS.sleep(5);
+                }catch (BooksDbException e){
 
-            // TODO: add alert box
+                    // TODO: add alert box
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        t1.start();
+        try{
+            t1.join();
+        } catch (InterruptedException e) {
         }
+        System.out.println("Finito med tråd add book");
     }
 
     void handleDeleteBook(String isbn, String title) {
         try {
-            Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to delete " + title + " from the database?", CONFIRMATION);
+            Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to delete " + title + " from the database?", ERROR);
             if (result.isPresent() && result.get() == ButtonType.CANCEL) {
                 return;
             }
             booksDb.deleteBook(isbn);
             booksView.clearBooks();
         } catch (BooksDbException e) {
-
+            booksView.showAlertAndWait("Something went wrong and your book has not been deleted from the database", ERROR);
         }
     }
 
-    void handleRelateBookWithAuthor(String isbn, ArrayList<Integer> authorIds){
-        try{
-            booksDb.relateBookWithAuthor(isbn, authorIds);
-        }catch (BooksDbException e){
-            // TODO
-        }
-    }
+
     void handleUpdateBook(int rating, String isbn) {
         try {
-            /*Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to update " + isbn + " from the database?", CONFIRMATION);
-            if (result.isPresent() && result.get()== ButtonType.CANCEL){
-                return;
-            }*/
             booksDb.updateBook(rating, isbn);
         } catch (BooksDbException e) {
-
+            booksView.showAlertAndWait("An error occurred and your update has not been successful", ERROR);
         }
     }
 
@@ -133,7 +138,7 @@ public class Controller {
         try {
             allAuthors = booksDb.retrieveAllAuthors();
         } catch (BooksDbException e) {
-            // TODO
+            booksView.showAlertAndWait("There has been an error retrieving the authors from the database. You wont be able to choose existing authors. Please contact your database admin to fix the problem", ERROR);
         }
         return allAuthors;
     }

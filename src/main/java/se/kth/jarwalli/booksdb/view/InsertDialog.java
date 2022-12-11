@@ -191,8 +191,7 @@ public class InsertDialog{
                 System.out.println(title + genre + datePublished + isbn + rating);
                 if(title!=null && genre!=null && datePicker.getValue()!=null && isbn!=null){
                     datePublished = datePicker.getValue().toString();
-                    controller.handleAddBook(isbn, title, datePublished, genre, rating, authorsToCreateList);
-                    controller.handleRelateBookWithAuthor(isbn, authorIdsToReturn);
+                    controller.handleAddBook(isbn, title, datePublished, genre, rating, authorsToCreateList, authorIdsToReturn);
                     stage.close();
                     // TODO
                     titleTextField.clear();

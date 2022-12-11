@@ -203,20 +203,7 @@ public class BooksDbImpl implements BooksDbInterface {
         return true;
     }
 
-    public boolean relateBookWithAuthor(String isbn, ArrayList<Integer> authorIds) throws BooksDbException {
-        String sql = "INSERT INTO wrote VALUES(?, ?)";
-        for (Integer i : authorIds) {
-            System.out.println(i);
-            try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-                pstmt.setInt(1, i);
-                pstmt.setString(2, isbn);
-                pstmt.executeUpdate();
-            } catch (SQLException e) {
-                throw new BooksDbException(e.getMessage(), e);
-            }
-        }
-        return true;
-    }
+
 
     @Override
     public boolean updateBook(int rating, String isbn) throws BooksDbException{
@@ -230,10 +217,8 @@ public class BooksDbImpl implements BooksDbInterface {
         }
         return true;
     }
-
     @Override
-    public boolean addBook(String isbn, String title, String datePublished, String genre, Integer rating, ArrayList<String> authors) throws BooksDbException {
-        ArrayList<Integer> authorIdList = new ArrayList<>();
+    public boolean addBook(String isbn, String title, String datePublished, String genre, Integer rating, ArrayList<String> authors, ArrayList<Integer> authorIdList) throws BooksDbException {
         // Step 1: Create Book
         String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?)";
         PreparedStatement pstmt = null;

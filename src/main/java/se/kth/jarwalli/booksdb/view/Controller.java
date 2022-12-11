@@ -133,6 +133,18 @@ public class Controller {
         }
     }
 
+    void handleLogin(String username, String password) {
+        try {
+            /*Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to update " + isbn + " from the database?", CONFIRMATION);
+            if (result.isPresent() && result.get()== ButtonType.CANCEL){
+                return;
+            }*/
+            booksDb.login(username, password, "Library");
+        } catch (BooksDbException e) {
+
+        }
+    }
+
     ArrayList<Author> retrieveAllAuthors() {
         ArrayList<Author> allAuthors = null;
         try {

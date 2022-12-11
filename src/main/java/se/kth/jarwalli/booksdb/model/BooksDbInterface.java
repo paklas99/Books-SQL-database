@@ -46,4 +46,6 @@ public interface BooksDbInterface {
     public ArrayList<Author> retrieveAllAuthors() throws BooksDbException;
 
     public boolean updateBook(int rating, String isbn) throws BooksDbException;
+
+    public boolean login(String username, String password, String database) throws BooksDbException;
 }

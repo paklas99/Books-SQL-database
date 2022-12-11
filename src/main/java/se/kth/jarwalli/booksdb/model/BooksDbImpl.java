@@ -262,8 +262,7 @@ public class BooksDbImpl implements BooksDbInterface {
                 while (resultAuthorKey.next()) {
                     authorIdList.add(resultAuthorKey.getInt(1));
                 }
-                System.out.println("first");
-                System.out.println("lista" + authorIdList);
+
             }
 
             // Step 3: Connect Author with Book

@@ -195,6 +195,9 @@ public class BooksPane extends VBox {
         menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu, authenticationMenu);
     }
 
+    public InsertDialog getInsertDialog() {
+        return insertDialog;
+    }
 
     private void addHandlers(Controller controller) {
         EventHandler<ActionEvent> menuSearchTitleHandler = new EventHandler<>() {
@@ -286,7 +289,7 @@ public class BooksPane extends VBox {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
-                    insertDialog.showDialog(controller.retrieveAllAuthors());
+                    controller.retrieveAllAuthors();
                 }
             }
         };

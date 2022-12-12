@@ -1,11 +1,13 @@
 package se.kth.jarwalli.booksdb.view;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import se.kth.jarwalli.booksdb.model.*;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -146,18 +148,19 @@ public class Controller {
     }
 
 
-    void handleAddBook(String isbn, String title, String published, String genre, Integer rating, ArrayList<String> authorsToCreate, ArrayList<Integer> existingAuthorIds){
+    void handleAddBook(Book book, ArrayList<String> authorsToCreate, ArrayList<Integer> existingAuthorIds){
         new Thread ("handleAddBookThread"){
             @Override
             public void run() {
                 try {
-                    booksDb.addBook(isbn, title, published, genre, rating, authorsToCreate, existingAuthorIds);
+                    booksDb.addBook(book, authorsToCreate, existingAuthorIds);
                 }catch (BooksDbException e){
-                    javafx.application.Platform.runLater(
+                    Platform.runLater(
                             new Runnable() {
                                 @Override
                                 public void run() {
                                     booksView.showAlertAndWait("Something went wrong and your book has not been added to the database", ERROR);
+                                    System.out.println(e.getMessage());
                                 }
                             });
                 }
@@ -167,8 +170,8 @@ public class Controller {
 
 
 
-    void handleDeleteBook(String isbn, String title) {
-        Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to delete " + title + " from the database?", CONFIRMATION);
+    void handleDeleteBook(Book book) {
+        Optional<ButtonType> result = booksView.showAlertAndWait("Are you sure you want to delete " + book.getTitle() + " from the database?", CONFIRMATION);
         if (result.isPresent() && result.get() == ButtonType.CANCEL) {
             return;
         }
@@ -176,7 +179,7 @@ public class Controller {
             @Override
             public void run(){
                 try {
-                    booksDb.deleteBook(isbn);
+                    booksDb.deleteBook(book);
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
                             new Runnable() {
@@ -193,12 +196,12 @@ public class Controller {
         booksView.clearBooks();
     }
 
-    void handleUpdateBook(int rating, String isbn) {
+    void handleUpdateBook(Book book) {
         new Thread("handleUpdateBookThread"){
             @Override
             public void run(){
                 try {
-                    booksDb.updateBook(rating, isbn);
+                    booksDb.updateBook(book);
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
                             new Runnable() {
@@ -235,11 +238,12 @@ public class Controller {
     }
 
     void retrieveAllAuthors() {
-        new Thread("handleRetriveAllAuthorsThread"){
+        new Thread("handleRetriveAllAuthorsThread") {
 
-                ArrayList<Author> allAuthors =new ArrayList<>();
+            ArrayList<Author> allAuthors = new ArrayList<>();
+
             @Override
-            public void run(){
+            public void run() {
                 try {
                     allAuthors = booksDb.retrieveAllAuthors();
                     javafx.application.Platform.runLater(
@@ -257,6 +261,29 @@ public class Controller {
                                 @Override
                                 public void run() {
                                     booksView.showAlertAndWait("There has been an error retrieving the authors from the database. You wont be able to choose existing authors. Please contact your database admin to fix the problem", ERROR);
+
+                                }
+                            });
+                }
+            }
+        }.start();
+    }
+
+
+
+    void handleReview(String isbn, String text) {
+        new Thread("handleReviewThread"){
+            @Override
+            public void run(){
+                try {
+                    String username = booksDb.retrieveCurrentUser();
+                    booksDb.addReview(new Review(text, username, LocalDate.now().toString(), isbn ));
+                } catch (BooksDbException e) {
+                    javafx.application.Platform.runLater(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    booksView.showAlertAndWait("Your review was not published. Remember that you can only review once per book", ERROR);
 
                                 }
                             });

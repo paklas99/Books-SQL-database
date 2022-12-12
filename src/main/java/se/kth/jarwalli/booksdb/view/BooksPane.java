@@ -40,7 +40,7 @@ public class BooksPane extends VBox {
     private InsertDialog insertDialog;
     private UpdateDialog updateDialog;
     private LoginDialog loginDialog;
-
+    private ReviewDialog reviewDialog;
     private MenuBar menuBar;
 
     public BooksPane(BooksDbImpl booksDb) {
@@ -49,6 +49,7 @@ public class BooksPane extends VBox {
         insertDialog = new InsertDialog(controller);
         updateDialog = new UpdateDialog(controller);
         loginDialog = new LoginDialog(controller);
+        reviewDialog = new ReviewDialog(controller);
     }
 
     /**
@@ -186,13 +187,17 @@ public class BooksPane extends VBox {
         MenuItem updateItem = new MenuItem("Update");
         manageMenu.getItems().addAll(addItem, removeItem, updateItem);
 
+        Menu reviewMenu = new Menu("Review");
+        MenuItem review = new MenuItem("review");
+        reviewMenu.getItems().addAll(review);
+
         Menu authenticationMenu = new Menu("Authentication");
         MenuItem login = new MenuItem("login");
         authenticationMenu.getItems().addAll(login);
 
 
         menuBar = new MenuBar();
-        menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu, authenticationMenu);
+        menuBar.getMenus().addAll(fileMenu, searchMenu, manageMenu, authenticationMenu,reviewMenu);
     }
 
     public InsertDialog getInsertDialog() {
@@ -284,6 +289,25 @@ public class BooksPane extends VBox {
         };
         menuBar.getMenus().get(0).getItems().get(2).addEventHandler(ActionEvent.ACTION, disconnectHandler);
 
+        EventHandler<ActionEvent> reviewHandler = new EventHandler<>() {
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (actionEvent.getSource() instanceof MenuItem) {
+                    Book tempBook = booksTable.getSelectionModel().getSelectedItem();
+                    if(tempBook!=null){
+
+                    }
+                    else{
+                        showAlertAndWait("You need to select the book you want to remove from the database.", Alert.AlertType.INFORMATION);
+                    }
+
+                    reviewDialog.showReviewDialog(tempBook);
+                }
+            }
+        };
+        menuBar.getMenus().get(4).getItems().get(0).addEventHandler(ActionEvent.ACTION, reviewHandler);
+
         EventHandler<ActionEvent> menuAddBookHandler = new EventHandler<>() {
 
             @Override
@@ -302,7 +326,7 @@ public class BooksPane extends VBox {
                 if (actionEvent.getSource() instanceof MenuItem) {
                     Book tempBook = booksTable.getSelectionModel().getSelectedItem();
                     if(tempBook!=null){
-                        controller.handleDeleteBook(tempBook.getIsbn(), tempBook.getTitle());
+                        controller.handleDeleteBook(tempBook);
                     }
                     else{
                         showAlertAndWait("You need to select the book you want to remove from the database.", Alert.AlertType.INFORMATION);
@@ -320,11 +344,13 @@ public class BooksPane extends VBox {
             public void handle(ActionEvent actionEvent) {
                 if (actionEvent.getSource() instanceof MenuItem) {
                     Book tempBook = booksTable.getSelectionModel().getSelectedItem();
-
-                    controller.handleUpdateBook(tempBook.getRating(), tempBook.getIsbn());
-                    updateDialog.showUpdateDialog(tempBook);
-
-
+                    if(tempBook!=null){
+                        controller.handleUpdateBook(tempBook);
+                        updateDialog.showUpdateDialog(tempBook);
+                    }
+                    else{
+                        showAlertAndWait("You need to select the book you want to update from the database.", Alert.AlertType.INFORMATION);
+                    }
                 }
             }
         };

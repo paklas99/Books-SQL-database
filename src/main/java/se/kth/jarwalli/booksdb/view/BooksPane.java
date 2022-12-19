@@ -9,18 +9,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import se.kth.jarwalli.booksdb.model.Author;
 import se.kth.jarwalli.booksdb.model.Book;
-import se.kth.jarwalli.booksdb.model.BooksDbImpl;
+import se.kth.jarwalli.booksdb.model.BooksDbImplMongo;
+import se.kth.jarwalli.booksdb.model.BooksDbImplSQL;
 import se.kth.jarwalli.booksdb.model.SearchMode;
-
-import javax.xml.transform.Result;
 
 /**
  * The main pane for the view, extending VBox and including the menus. An
@@ -43,7 +38,7 @@ public class BooksPane extends VBox {
     private ReviewDialog reviewDialog;
     private MenuBar menuBar;
 
-    public BooksPane(BooksDbImpl booksDb) {
+    public BooksPane(BooksDbImplMongo booksDb) {
         final Controller controller = new Controller(booksDb, this);
         this.init(controller);
         insertDialog = new InsertDialog(controller);

@@ -7,10 +7,7 @@ package se.kth.jarwalli.booksdb.model;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 /**
  * A mock implementation of the BooksDBInterface interface to demonstrate how to
@@ -20,11 +17,11 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
  *
  * @author anderslm@kth.se
  */
-public class BooksDbImpl implements BooksDbInterface {
+public class BooksDbImplSQL implements BooksDbInterface {
 
     private ArrayList<Book> result;
 
-    public BooksDbImpl() {
+    public BooksDbImplSQL() {
         result = new ArrayList<>();
     }
 

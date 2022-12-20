@@ -108,7 +108,7 @@ public class Controller {
             @Override
             public void run(){
                 try {
-                    booksDb.connect("appdb");
+                    booksDb.connect("Library");
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
                             new Runnable() {

@@ -16,7 +16,7 @@ public class Book {
     private String genre;
     private Integer rating;
     
-    public Book(String isbn, String title, String published, String genre, int rating) {
+    public Book(String isbn, String title, String published, String genre, Integer rating) {
         this.isbn = isbn;
         this.title = title;
         this.published = published;

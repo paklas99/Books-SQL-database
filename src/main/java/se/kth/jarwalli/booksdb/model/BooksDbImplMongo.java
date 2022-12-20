@@ -3,10 +3,13 @@ package se.kth.jarwalli.booksdb.model;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.mongodb.client.*;
 
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
 import org.bson.BsonDocument;
 import org.bson.BsonInt64;
 import org.bson.Document;
@@ -18,7 +21,7 @@ import static com.mongodb.client.model.Filters.eq;
 import static java.util.Collections.singletonList;
 
 
-public class BooksDbImplMongo implements BooksDbInterface{
+public class BooksDbImplMongo implements BooksDbInterface {
     private MongoDatabase mongoDatabase;
     private ArrayList<Book> result;
 
@@ -38,15 +41,15 @@ public class BooksDbImplMongo implements BooksDbInterface{
 
 
         MongoClient mongoClient = MongoClients.create(uri);
-            mongoDatabase = mongoClient.getDatabase(database);
-            try {
-                Bson command = new BsonDocument("ping", new BsonInt64(1));
-                Document commandResult = mongoDatabase.runCommand(command);
-                System.out.println("Connected successfully to server.");
-            } catch (MongoException me) {
-                System.err.println("An error occurred while attempting to run a command: " + me);
+        mongoDatabase = mongoClient.getDatabase(database);
+        try {
+            Bson command = new BsonDocument("ping", new BsonInt64(1));
+            Document commandResult = mongoDatabase.runCommand(command);
+            System.out.println("Connected successfully to server.");
+        } catch (MongoException me) {
+            System.err.println("An error occurred while attempting to run a command: " + me);
 
-            }
+        }
 /*
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(server, user, pwd);*/
@@ -66,11 +69,32 @@ public class BooksDbImplMongo implements BooksDbInterface{
     @Override
     public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException, SQLException {
         //System.out.println(mongoDatabase.getName());
+        result.clear();
         MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
 
         FindIterable find = collection.find(eq("title", searchTitle));
+        List<Bson> pipeline = Arrays.asList(
+                Aggregates.match(Filters.regex("title", searchTitle, "i")),
+                Aggregates.lookup("Author", "author", "_id", "author")
+        );
 
-        retrieveBooks(find);
+        AggregateIterable<Document> result2 = collection.aggregate(pipeline);
+        for (Document document : result2) {
+            Book tempBook;
+            document.get("author");
+            result.add(tempBook = new Book(document.getString("isbn"),
+                    document.getString("title"),
+                    document.getString("datePublished"),
+                    document.getString("genre"),
+                    document.getInteger("rating")));
+            List<Document> authors = (List<Document>) (document.get("author"));
+            for (Document author : authors) {
+                tempBook.addAuthor(author.getString("fullName"));
+            }
+
+        }
+
+        //retrieveBooks(find);
         return result;
     }
 
@@ -129,13 +153,12 @@ public class BooksDbImplMongo implements BooksDbInterface{
         return null;
     }
 
-    private void retrieveBooks(FindIterable find){
+    private void retrieveBooks(FindIterable find) {
         MongoCursor<Document> cursor = find.iterator();
-        while(cursor.hasNext()){
+        while (cursor.hasNext()) {
             Book tempBook;
             System.out.println("Test");
             Document doc = cursor.next();
-
 
 
             System.out.println(doc.getString("isbn") +

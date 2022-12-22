@@ -3,6 +3,7 @@ package se.kth.jarwalli.booksdb.view;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import org.bson.io.BsonOutput;
 import se.kth.jarwalli.booksdb.model.*;
 
 import java.sql.Date;
@@ -87,12 +88,14 @@ public class Controller {
 
                         );
                     }
-                } catch (Exception e) {
+                } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
+
                             new Runnable() {
                                 @Override
                                 public void run() {
                                     booksView.showAlertAndWait("Database error.", ERROR);
+                                    System.out.println(e.getMessage());
 
                                 }
                             }
@@ -126,11 +129,9 @@ public class Controller {
 
     void handleDisconnect() {
 
-        System.out.println("innan");
         new Thread("handleDisconnectThread"){
             @Override
             public void run(){
-                System.out.println("i run");
                 try {
                     booksDb.disconnect();
                 } catch (BooksDbException e) {

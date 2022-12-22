@@ -2,8 +2,12 @@ package se.kth.jarwalli.booksdb.model;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import com.mongodb.client.*;
@@ -22,6 +26,7 @@ import static java.util.Collections.singletonList;
 
 
 public class BooksDbImplMongo implements BooksDbInterface {
+    private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private ArrayList<Book> result;
 
@@ -31,70 +36,38 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public boolean connect(String database) throws BooksDbException {
-/*        String user = "UserKTH"; // user name
-        String pwd = "mypassword"; // password
-        System.out.println(user + ", *********");
-        String server
-                = "jdbc:mysql://localhost:3306/" + database
-                + "?UseClientEnc=UTF8";*/
+
         String uri = "mongodb://localhost:27017";
-
-
-        MongoClient mongoClient = MongoClients.create(uri);
-        mongoDatabase = mongoClient.getDatabase(database);
         try {
-            Bson command = new BsonDocument("ping", new BsonInt64(1));
-            Document commandResult = mongoDatabase.runCommand(command);
+            mongoClient = MongoClients.create(uri);
+            mongoDatabase = mongoClient.getDatabase(database);
             System.out.println("Connected successfully to server.");
         } catch (MongoException me) {
-            System.err.println("An error occurred while attempting to run a command: " + me);
-
+            throw new BooksDbException(me.getMessage(), me);
         }
-/*
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(server, user, pwd);*/
-/*            System.out.println("Connected!");
-        } catch (SQLException | ClassNotFoundException e) {
-            throw new BooksDbException(e.getMessage(), e);
-        }*/
-
         return true;
     }
 
     @Override
     public void disconnect() throws BooksDbException {
-
+        mongoClient.close();
     }
 
     @Override
-    public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException, SQLException {
+    public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException {
         //System.out.println(mongoDatabase.getName());
         result.clear();
         MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
 
-        FindIterable find = collection.find(eq("title", searchTitle));
         List<Bson> pipeline = Arrays.asList(
                 Aggregates.match(Filters.regex("title", searchTitle, "i")),
                 Aggregates.lookup("Author", "author", "_id", "author")
         );
 
-        AggregateIterable<Document> result2 = collection.aggregate(pipeline);
-        for (Document document : result2) {
-            Book tempBook;
-            document.get("author");
-            result.add(tempBook = new Book(document.getString("isbn"),
-                    document.getString("title"),
-                    document.getString("datePublished"),
-                    document.getString("genre"),
-                    document.getInteger("rating")));
-            List<Document> authors = (List<Document>) (document.get("author"));
-            for (Document author : authors) {
-                tempBook.addAuthor(author.getString("fullName"));
-            }
+        AggregateIterable<Document> aggregateIterable = collection.aggregate(pipeline);
 
-        }
 
-        //retrieveBooks(find);
+        retrieveBooks(aggregateIterable);
         return result;
     }
 
@@ -153,29 +126,21 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return null;
     }
 
-    private void retrieveBooks(FindIterable find) {
-        MongoCursor<Document> cursor = find.iterator();
-        while (cursor.hasNext()) {
+    private void retrieveBooks(AggregateIterable<Document> aggregateIterable) {
+        for (Document document : aggregateIterable) {
             Book tempBook;
-            System.out.println("Test");
-            Document doc = cursor.next();
-
-
-            System.out.println(doc.getString("isbn") +
-                    doc.getString("title") +
-                    doc.getString("datePublished") +
-                    doc.getString("genre") +
-                    doc.getInteger("rating"));
-            //System.out.println(doc.getString("title") + ", " + doc.getInteger("rating"));
-            result.add(new Book(doc.getString("isbn"),
-                    doc.getString("title"),
-                    doc.getString("datePublished"),
-                    doc.getString("genre"),
-                    doc.getInteger("rating")));
-            System.out.println("r: " + result);
-
+            document.get("author");
+            result.add(tempBook = new Book(document.getString("isbn"),
+                    document.getString("title"),
+                    document.getString("datePublished"),
+                    // IF WANTING TO FORMAT DATE:
+                    // document.getDate("datePublished").toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_LOCAL_DATE),
+                    document.getString("genre"),
+                    document.getInteger("rating")));
+            List<Document> authors = (List<Document>) (document.get("author"));
+            for (Document author : authors) {
+                tempBook.addAuthor(author.getString("fullName"));
+            }
         }
-
     }
-
 }

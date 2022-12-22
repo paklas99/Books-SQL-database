@@ -23,7 +23,7 @@ public class Main extends Application {
 
         BooksDbImplMongo booksDb = new BooksDbImplMongo(); // model
         // TODO delete this connection härnere !!!!!!!!
-        //booksDb.connect("Library");
+        booksDb.connect("Library");
 
         // Don't forget to connect to the db, somewhere...
 

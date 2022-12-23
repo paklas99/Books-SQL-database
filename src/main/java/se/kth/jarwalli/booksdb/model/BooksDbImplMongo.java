@@ -22,6 +22,7 @@ import com.mongodb.MongoException;
 
 import static com.mongodb.client.model.Aggregates.lookup;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.regex;
 import static java.util.Collections.singletonList;
 
 
@@ -55,19 +56,14 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException {
-        //System.out.println(mongoDatabase.getName());
-        result.clear();
-        MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-
-        List<Bson> pipeline = Arrays.asList(
-                Aggregates.match(Filters.regex("title", searchTitle, "i")),
-                Aggregates.lookup("Author", "author", "_id", "author")
-        );
-
-        AggregateIterable<Document> aggregateIterable = collection.aggregate(pipeline);
-
-
-        retrieveBooks(aggregateIterable);
+        try{
+            result.clear();
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            FindIterable findIterable = collection.find(regex("title", searchTitle, "i"));
+            retrieveBooks(findIterable);
+        }catch (MongoException me) {
+        throw new BooksDbException(me.getMessage(), me);
+    }
         return result;
     }
 
@@ -126,18 +122,18 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return null;
     }
 
-    private void retrieveBooks(AggregateIterable<Document> aggregateIterable) {
-        for (Document document : aggregateIterable) {
+    private void retrieveBooks(FindIterable<Document> findIterable) {
+        MongoCursor<Document> cursor = findIterable.cursor();
+        while (cursor.hasNext()) {
+            Document document = cursor.next();
             Book tempBook;
-            document.get("author");
+            System.out.println(document.getString("title"));
             result.add(tempBook = new Book(document.getString("isbn"),
                     document.getString("title"),
-                    document.getString("datePublished"),
-                    // IF WANTING TO FORMAT DATE:
-                    // document.getDate("datePublished").toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_LOCAL_DATE),
+                    document.getDate("datePublished").toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE),
                     document.getString("genre"),
                     document.getInteger("rating")));
-            List<Document> authors = (List<Document>) (document.get("author"));
+            List<Document> authors = (List<Document>) (document.get("authors"));
             for (Document author : authors) {
                 tempBook.addAuthor(author.getString("fullName"));
             }

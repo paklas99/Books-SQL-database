@@ -111,7 +111,7 @@ public class Controller {
             @Override
             public void run(){
                 try {
-                    booksDb.connect("LibTest");
+                    booksDb.connect("Library");
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
                             new Runnable() {
@@ -223,7 +223,7 @@ public class Controller {
             @Override
             public void run(){
                 try {
-                    booksDb.login(username, password, "LibTest");
+                    booksDb.login(username, password, "Library");
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
                             new Runnable() {

@@ -82,7 +82,7 @@ public class BooksDbImplSQL implements BooksDbInterface {
             ResultSet resultset = stmt.executeQuery(sql);
 
             while (resultset.next()) {
-                allAuthors.add(new Author(resultset.getInt("authorId"), resultset.getString("fullName")));
+                allAuthors.add(new Author(resultset.getString("authorId"), resultset.getString("fullName")));
             }
             allAuthorsCopy = (ArrayList<Author>) allAuthors.clone();
             allAuthors.clear();
@@ -336,12 +336,12 @@ public class BooksDbImplSQL implements BooksDbInterface {
      * Adds a book to the database with a transaction.
      * @param book to be added
      * @param authors The author(s) of the book
-     * @param authorIdList A list of the authordId's of the authors
+     * @param existingAuthorsList A list of the authordId's of the authors
      * @return returns the boolean representation if a new book was added or not
      * @throws BooksDbException
      */
     @Override
-    public Book addBook(Book book, ArrayList<String> authors, ArrayList<Integer> authorIdList) throws BooksDbException {
+    public Book addBook(Book book, ArrayList<String> authors, ArrayList<Author> existingAuthorsList) throws BooksDbException {
         // Step 1: Create Book
         String sql = "INSERT INTO Book VALUES(?, ?, ?, ?, ?)";
         PreparedStatement pstmt = null;
@@ -366,16 +366,16 @@ public class BooksDbImplSQL implements BooksDbInterface {
                 pstmt.executeUpdate();
                 ResultSet resultAuthorKey = pstmt.getGeneratedKeys();
                 while (resultAuthorKey.next()) {
-                    authorIdList.add(resultAuthorKey.getInt(1));
+                    existingAuthorsList.add(new Author((((Integer)resultAuthorKey.getInt(1)).toString()), authors.get(i)));
                 }
 
             }
 
             // Step 3: Connect Author with Book
             String sql3 = "INSERT INTO Wrote VALUES(?, ?)";
-            for (int i = 0; i < authorIdList.size(); i++) {
+            for (int i = 0; i < existingAuthorsList.size(); i++) {
                 pstmt = con.prepareStatement(sql3);
-                pstmt.setInt(1, authorIdList.get(i));
+                pstmt.setString(1, existingAuthorsList.get(i).getAuthorId());
                 pstmt.setString(2, book.getIsbn());
                 pstmt.executeUpdate();
             }

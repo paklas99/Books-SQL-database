@@ -1,29 +1,21 @@
 package se.kth.jarwalli.booksdb.model;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.mongodb.client.*;
 
-import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
-import org.bson.BsonDocument;
-import org.bson.BsonInt64;
+import com.mongodb.client.model.Updates;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import com.mongodb.MongoException;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Aggregates.lookup;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.regex;
-import static java.util.Collections.singletonList;
 
 
 public class BooksDbImplMongo implements BooksDbInterface {
@@ -88,8 +80,57 @@ public class BooksDbImplMongo implements BooksDbInterface {
     }
 
     @Override
-    public Book addBook(Book book, ArrayList<String> authors, ArrayList<Integer> authorIdList) throws BooksDbException {
-        return null;
+    public Book addBook(Book book, ArrayList<String> authors, ArrayList<Author> existingAuthorsList) throws BooksDbException {
+        try {
+
+            List<Document> authorsTotal = new ArrayList<>();
+            // Step 1: Create Book
+            String[] tempDate = book.getPublished().split("-");
+            Calendar calendar = new GregorianCalendar(Integer.parseInt(tempDate[0]), Integer.parseInt(tempDate[1]), Integer.parseInt(tempDate[2]));
+            Date date = calendar.getTime();
+            Document document = new Document("isbn", book.getIsbn())
+                    .append("title", book.getTitle())
+                    .append("datePublished", date)
+                    .append("genre", book.getGenre())
+                    .append("rating", book.getRating());
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            collection.insertOne(document);
+            ObjectId objectId = document.getObjectId("_id");
+            MongoCollection<Document> authorCollection = mongoDatabase.getCollection("Author");
+
+
+            // Step 2: Create new Authors
+            for(String s : authors){
+                Document tempAuthor = new Document("fullName", s);
+                authorsTotal.add(tempAuthor);
+                authorCollection.insertOne(tempAuthor);
+            }
+
+            // Step 3: Add existing authors
+            for(Author a : existingAuthorsList){
+                authorsTotal.add(new Document("_id", new ObjectId(a.getAuthorId())).append("fullName", a.getFullName()));
+            }
+            for(Document d : authorsTotal){
+                System.out.println("test " + d.get("_id") + d.get("fullName"));
+            }
+
+            Bson filter = Filters.eq("_id", objectId);
+            Bson update = Updates.set("authors", authorsTotal);
+            collection.updateOne(filter, update);
+
+
+
+        }catch (MongoException me){
+            System.out.println(me.getMessage());
+        }
+
+
+        // Connect Author with Book
+
+        //document.append()
+
+
+        return book;
     }
 
     @Override
@@ -99,7 +140,18 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public ArrayList<Author> retrieveAllAuthors() throws BooksDbException {
-        return null;
+        ArrayList<Author> allAuthors = new ArrayList<>();
+        try{
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Author");
+            ArrayList<Document> documents = collection.find().into(new ArrayList<>());
+            for(Document d : documents){
+                allAuthors.add(new Author(d.get("_id").toString(), d.getString("fullName")));
+                System.out.println( d.get("_id").toString() + d.getString("fullName"));
+            }
+        }catch (MongoException me) {
+            throw new BooksDbException(me.getMessage(), me);
+        }
+        return (ArrayList<Author>) allAuthors.clone();
     }
 
     @Override
@@ -134,8 +186,10 @@ public class BooksDbImplMongo implements BooksDbInterface {
                     document.getString("genre"),
                     document.getInteger("rating")));
             List<Document> authors = (List<Document>) (document.get("authors"));
-            for (Document author : authors) {
-                tempBook.addAuthor(author.getString("fullName"));
+            if(authors!=null){
+                for (Document author : authors) {
+                    tempBook.addAuthor(author.getString("fullName"));
+                }
             }
         }
     }

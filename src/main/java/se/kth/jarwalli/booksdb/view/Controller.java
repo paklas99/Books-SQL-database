@@ -1,18 +1,13 @@
 package se.kth.jarwalli.booksdb.view;
 
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import org.bson.io.BsonOutput;
 import se.kth.jarwalli.booksdb.model.*;
 
-import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static javafx.scene.control.Alert.AlertType.*;
 
@@ -149,12 +144,12 @@ public class Controller {
     }
 
 
-    void handleAddBook(Book book, ArrayList<String> authorsToCreate, ArrayList<Integer> existingAuthorIds){
+    void handleAddBook(Book book, ArrayList<String> authorsToCreate, ArrayList<Author> existingAuthorsList){
         new Thread ("handleAddBookThread"){
             @Override
             public void run() {
                 try {
-                    booksDb.addBook(book, authorsToCreate, existingAuthorIds);
+                    booksDb.addBook(book, authorsToCreate, existingAuthorsList);
                 }catch (BooksDbException e){
                     Platform.runLater(
                             new Runnable() {

@@ -35,6 +35,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
             System.out.println("Connected successfully to server.");
+
         } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
         }
@@ -153,7 +154,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
 
         }catch (MongoException me){
-            System.out.println(me.getMessage());
+            throw new BooksDbException(me.getMessage(), me);
         }
 
         return book;
@@ -161,7 +162,13 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public Book deleteBook(Book book) throws BooksDbException {
-        return null;
+        try {
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            collection.findOneAndDelete(eq("_id", book.getIsbn()));
+        } catch (MongoException me){
+            throw new BooksDbException(me.getMessage(), me);
+        }
+        return book;
     }
 
     @Override
@@ -182,12 +189,30 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public Book updateBook(Book book) throws BooksDbException {
-        return null;
+        try {
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            Bson filter = Filters.eq("_id", book.getIsbn());
+            Bson update = Updates.set("rating", book.getRating());
+            collection.updateOne(filter, update);
+        } catch (MongoException me) {
+            throw new BooksDbException(me.getMessage(), me);
+        }
+        return book;
     }
 
     @Override
     public void login(String user, String pwd, String database) throws BooksDbException {
 
+
+        String uri = "mongodb://" + user + ":" + pwd+ "@" + "localhost:27017/";
+        try {
+            System.out.println(mongoClient);
+            mongoClient = MongoClients.create(uri);
+            System.out.println(mongoClient);
+            mongoDatabase = mongoClient.getDatabase(database);
+        } catch (MongoException me) {
+            throw new BooksDbException(me.getMessage(), me);
+        }
     }
 
     @Override

@@ -61,22 +61,54 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public List<Book> searchBooksByISBN(String searchIsbn) throws BooksDbException {
-        return null;
+        try{
+            result.clear();
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            FindIterable findIterable = collection.find(regex("_id", searchIsbn, "i"));
+            retrieveBooks(findIterable);
+        }catch (MongoException me) {
+            throw new BooksDbException(me.getMessage(), me);
+        }
+        return result;
     }
 
     @Override
     public List<Book> searchBookByAuthor(String searchAuthor) throws BooksDbException {
-        return null;
+        try{
+            result.clear();
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            FindIterable findIterable = collection.find(regex("authors", searchAuthor, "i"));
+            retrieveBooks(findIterable);
+        }catch (MongoException me) {
+            throw new BooksDbException(me.getMessage(), me);
+        }
+        return result;
     }
 
     @Override
     public List<Book> searchBookByGenre(String searchGenre) throws BooksDbException {
-        return null;
+        try{
+            result.clear();
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            FindIterable findIterable = collection.find(regex("authors", searchGenre, "i"));
+            retrieveBooks(findIterable);
+        }catch (MongoException me) {
+            throw new BooksDbException(me.getMessage(), me);
+        }
+        return result;
     }
 
     @Override
-    public List<Book> searchBookByRating(int searchRating) throws BooksDbException {
-        return null;
+    public List<Book> searchBookByRating(String searchRating) throws BooksDbException {
+        try{
+            result.clear();
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            FindIterable findIterable = collection.find(regex("authors", searchRating, "i"));
+            retrieveBooks(findIterable);
+        }catch (MongoException me) {
+            throw new BooksDbException(me.getMessage(), me);
+        }
+        return result;
     }
 
     @Override

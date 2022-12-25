@@ -88,14 +88,13 @@ public class BooksDbImplMongo implements BooksDbInterface {
             String[] tempDate = book.getPublished().split("-");
             Calendar calendar = new GregorianCalendar(Integer.parseInt(tempDate[0]), Integer.parseInt(tempDate[1]), Integer.parseInt(tempDate[2]));
             Date date = calendar.getTime();
-            Document document = new Document("isbn", book.getIsbn())
+            Document document = new Document("_id", book.getIsbn())
                     .append("title", book.getTitle())
                     .append("datePublished", date)
                     .append("genre", book.getGenre())
                     .append("rating", book.getRating());
             MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
             collection.insertOne(document);
-            ObjectId objectId = document.getObjectId("_id");
             MongoCollection<Document> authorCollection = mongoDatabase.getCollection("Author");
 
 
@@ -114,7 +113,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
                 System.out.println("test " + d.get("_id") + d.get("fullName"));
             }
 
-            Bson filter = Filters.eq("_id", objectId);
+            Bson filter = Filters.eq("_id", book.getIsbn());
             Bson update = Updates.set("authors", authorsTotal);
             collection.updateOne(filter, update);
 
@@ -123,12 +122,6 @@ public class BooksDbImplMongo implements BooksDbInterface {
         }catch (MongoException me){
             System.out.println(me.getMessage());
         }
-
-
-        // Connect Author with Book
-
-        //document.append()
-
 
         return book;
     }

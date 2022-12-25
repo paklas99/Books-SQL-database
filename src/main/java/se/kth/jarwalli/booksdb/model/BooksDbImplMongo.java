@@ -179,8 +179,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
         while (cursor.hasNext()) {
             Document document = cursor.next();
             Book tempBook;
-            System.out.println(document.getString("title"));
-            result.add(tempBook = new Book(document.getString("isbn"),
+            result.add(tempBook = new Book(document.getString("_id"),
                     document.getString("title"),
                     document.getDate("datePublished").toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE),
                     document.getString("genre"),

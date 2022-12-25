@@ -78,7 +78,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
             result.clear();
             MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
             //FindIterable findIterable = collection.find()
-            //FindIterable findIterable = collection.find(regex("authors", searchAuthor, "i"));
+            FindIterable findIterable = collection.find(Filters.elemMatch("authors", regex("fullName", searchAuthor, "i")));
             retrieveBooks(findIterable);
         }catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);

@@ -77,7 +77,8 @@ public class BooksDbImplMongo implements BooksDbInterface {
         try{
             result.clear();
             MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-            FindIterable findIterable = collection.find(regex("authors", searchAuthor, "i"));
+            //FindIterable findIterable = collection.find()
+            //FindIterable findIterable = collection.find(regex("authors", searchAuthor, "i"));
             retrieveBooks(findIterable);
         }catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
@@ -90,7 +91,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
         try{
             result.clear();
             MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-            FindIterable findIterable = collection.find(regex("authors", searchGenre, "i"));
+            FindIterable findIterable = collection.find(regex("genre", searchGenre, "i"));
             retrieveBooks(findIterable);
         }catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
@@ -99,11 +100,11 @@ public class BooksDbImplMongo implements BooksDbInterface {
     }
 
     @Override
-    public List<Book> searchBookByRating(String searchRating) throws BooksDbException {
+    public List<Book> searchBookByRating(int searchRating) throws BooksDbException {
         try{
             result.clear();
             MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-            FindIterable findIterable = collection.find(regex("authors", searchRating, "i"));
+            FindIterable findIterable = collection.find(eq("rating", searchRating));
             retrieveBooks(findIterable);
         }catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);

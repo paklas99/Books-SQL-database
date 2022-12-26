@@ -3,28 +3,28 @@ package se.kth.jarwalli.booksdb.model;
 import java.util.ArrayList;
 
 public class Author {
-    private int authorId;
+    private String authorId;
     private String fullName;
     private String dateOfBirth;
 
-    public Author(int authorId, String fullName, String dateOfBirth) {
+    public Author(String authorId, String fullName, String dateOfBirth) {
         this.authorId = authorId;
         this.fullName = fullName;
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Author(int authorId, String fullName){
+    public Author(String authorId, String fullName){
         this(authorId, fullName, null);
     }
     public Author(String fullName){
-        this(0, fullName, null);
+        this(null, fullName, null);
     }
 
-    public int getAuthorId() {
+    public String getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(int authorId) {
+    public void setAuthorId(String authorId) {
         this.authorId = authorId;
     }
 

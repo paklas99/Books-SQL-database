@@ -5,8 +5,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import se.kth.jarwalli.booksdb.model.BooksDbException;
-import se.kth.jarwalli.booksdb.model.BooksDbInterface;
-import se.kth.jarwalli.booksdb.model.BooksDbImpl;
+import se.kth.jarwalli.booksdb.model.BooksDbImplMongo;
+import se.kth.jarwalli.booksdb.model.BooksDbImplSQL;
 import se.kth.jarwalli.booksdb.view.BooksPane;
 
 import java.sql.SQLException;
@@ -21,7 +21,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws SQLException, ClassNotFoundException, BooksDbException {
 
-        BooksDbImpl booksDb = new BooksDbImpl(); // model
+        BooksDbImplMongo booksDb = new BooksDbImplMongo(); // model
         // TODO delete this connection härnere !!!!!!!!
         booksDb.connect("Library");
 

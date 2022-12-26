@@ -1,17 +1,13 @@
 package se.kth.jarwalli.booksdb.view;
 
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import se.kth.jarwalli.booksdb.model.*;
 
-import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static javafx.scene.control.Alert.AlertType.*;
 
@@ -87,12 +83,14 @@ public class Controller {
 
                         );
                     }
-                } catch (Exception e) {
+                } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
+
                             new Runnable() {
                                 @Override
                                 public void run() {
                                     booksView.showAlertAndWait("Database error.", ERROR);
+                                    System.out.println(e.getMessage());
 
                                 }
                             }
@@ -126,11 +124,9 @@ public class Controller {
 
     void handleDisconnect() {
 
-        System.out.println("innan");
         new Thread("handleDisconnectThread"){
             @Override
             public void run(){
-                System.out.println("i run");
                 try {
                     booksDb.disconnect();
                 } catch (BooksDbException e) {
@@ -148,12 +144,12 @@ public class Controller {
     }
 
 
-    void handleAddBook(Book book, ArrayList<String> authorsToCreate, ArrayList<Integer> existingAuthorIds){
+    void handleAddBook(Book book, ArrayList<String> authorsToCreate, ArrayList<Author> existingAuthorsList){
         new Thread ("handleAddBookThread"){
             @Override
             public void run() {
                 try {
-                    booksDb.addBook(book, authorsToCreate, existingAuthorIds);
+                    booksDb.addBook(book, authorsToCreate, existingAuthorsList);
                 }catch (BooksDbException e){
                     Platform.runLater(
                             new Runnable() {

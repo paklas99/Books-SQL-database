@@ -1,9 +1,5 @@
 package se.kth.jarwalli.booksdb.model;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +37,7 @@ public interface BooksDbInterface {
      * @return A list of books to be shown in the UI
      * @throws BooksDbException
      */
-    public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException, SQLException;
+    public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException;
     /**
      * Searches for a book by isbn in the database
      * @param searchIsbn The isbn of a book to search for
@@ -74,11 +70,11 @@ public interface BooksDbInterface {
      * Adds a book to the database with a transaction.
      * @param book to be added
      * @param authors The author(s) of the book
-     * @param authorIdList A list of the authordId's of the authors
+     * @param existingAuthorsList A list of the authordId's of the authors
      * @return returns the boolean representation if a new book was added or not
      * @throws BooksDbException
      */
-    public Book addBook(Book book, ArrayList<String> authors, ArrayList<Integer> authorIdList) throws BooksDbException;
+    public Book addBook(Book book, ArrayList<String> authors, ArrayList<Author> existingAuthorsList) throws BooksDbException;
     /**
      * Delete a book from the database
      * @param book to be deleted

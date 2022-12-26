@@ -40,7 +40,7 @@ public class InsertDialog{
     private Button okConfirmAuthorsButton;
     private ArrayList<Author> allAuthors;
     private ArrayList<Text> chosenAuthorsTextForDisplay;
-    private ArrayList<Integer> authorIdsToReturn;
+    private ArrayList<Author> existingAuthorsToReturn;
     private ArrayList<String> authorsToCreateList;
     private ComboBox existingAuthorsComboBox;
     private GridPane authorGridPane;
@@ -62,7 +62,7 @@ public class InsertDialog{
         chosenAuthorsTextForDisplay = new ArrayList<>();
         authorsToCreateList = new ArrayList<>();
         allAuthors = new ArrayList<>();
-        authorIdsToReturn = new ArrayList<>();
+        existingAuthorsToReturn = new ArrayList<>();
         extraAuthorComboBoxes = new ArrayList<>();
 
         // Create nodes for the gridPane dialog:
@@ -174,7 +174,7 @@ public class InsertDialog{
             @Override
             public void handle(ActionEvent actionEvent) {
                 authorsToCreateList.clear();
-                authorIdsToReturn.clear();
+                existingAuthorsToReturn.clear();
                 extraAuthorComboBoxes.clear();
                 extraAuthorComboBoxes.add(existingAuthorsComboBox);
                 addAuthorDialog();
@@ -193,7 +193,7 @@ public class InsertDialog{
                 if(title!=null && genre!=null && datePicker.getValue()!=null && isbn!=null){
                     datePublished = datePicker.getValue().toString();
                     Book bookToReturn = new Book(isbn, title, datePublished, genre, rating);
-                    controller.handleAddBook(bookToReturn, authorsToCreateList, authorIdsToReturn);
+                    controller.handleAddBook(bookToReturn, authorsToCreateList, existingAuthorsToReturn);
                     stage.close();
                     titleTextField.clear();
                     genreTextField.clear();
@@ -239,7 +239,7 @@ public class InsertDialog{
                             authorsToCreateList.add((String)c.getSelectionModel().getSelectedItem());
                         }
                         else{
-                            authorIdsToReturn.add(allAuthors.get(tempIndex).getAuthorId());
+                            existingAuthorsToReturn.add(new Author(allAuthors.get(tempIndex).getAuthorId(), allAuthors.get(tempIndex).getFullName()));
                             System.out.println("adding existing author: " + allAuthors.get(tempIndex).getFullName());
                         }
                     }
@@ -248,7 +248,7 @@ public class InsertDialog{
                 for(int i=1; i<extraAuthorComboBoxes.size(); i++){
                     authorListVBox.getChildren().remove(extraAuthorComboBoxes.get(i));
                 }
-                System.out.println(authorIdsToReturn);
+                System.out.println(existingAuthorsToReturn);
 
                 authorStage.close();
 

@@ -256,10 +256,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public String retrieveCurrentUser() throws BooksDbException {
-        Document connectionStatus = mongoClient.getDatabase("Library").runCommand(new Document("connectionStatus", 1));
-        String authenticatedUser = connectionStatus.get("authInfo", Document.class).getString("authenticatedUsers[0].user");
-        System.out.println("Authenticated user: " + authenticatedUser);
-        return authenticatedUser.toString();
+        return activeUser;
     }
 
     private void retrieveBooks(FindIterable<Document> findIterable) {

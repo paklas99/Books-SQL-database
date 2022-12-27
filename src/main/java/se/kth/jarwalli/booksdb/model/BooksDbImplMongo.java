@@ -9,7 +9,9 @@ import com.mongodb.client.*;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+
 import com.mongodb.internal.connection.MongoCredentialWithCache;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import com.mongodb.MongoException;
 import org.bson.conversions.Bson;
@@ -31,10 +33,13 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public boolean connect(String database) throws BooksDbException {
+        //String uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
 
-        String uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";        try {
+        String uri = "mongodb://localhost:27017";
+        try {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
+            //mongoDatabase.runCommand(new Document("authenticate", 1).append("user", user).append("pwd", pwd));
             System.out.println("Connected successfully to server.");
 
         } catch (MongoException me) {
@@ -206,23 +211,36 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
         String uri = "mongodb://" + user + ":" + pwd+ "@" + "localhost:27017/Library";
         try {
-            System.out.println(mongoClient);
             mongoClient = MongoClients.create(uri);
-            System.out.println(mongoClient);
             mongoDatabase = mongoClient.getDatabase(database);
+            mongoDatabase.runCommand(new Document("authenticate", 1).append("user", user).append("pwd", pwd));
         } catch (MongoException me) {
+            System.out.println("here");
             throw new BooksDbException(me.getMessage(), me);
         }
     }
 
     @Override
     public Review addReview(Review review) throws BooksDbException {
-        return null;
+        MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+        try{
+            Document reviewToAdd = new Document("user", review.getUser())
+                    .append("review", review.getText());
+            Document update = new Document("$push", new Document("reviews", reviewToAdd));
+            Document filter = new Document("_id", review.getIsbn());
+            UpdateResult result = collection.updateOne(filter, update);
+        } catch (MongoException me){
+            throw new BooksDbException(me.getMessage(), me);
+        }
+
+        return review;
     }
 
     @Override
     public String retrieveCurrentUser() throws BooksDbException {
-        return null;
+        Document currentUser = mongoClient.getDatabase("Library").runCommand(new Document("whatsmyuri", 1));
+        System.out.println("Current user: " + currentUser.getString("user"));
+        return currentUser.getString("user");
     }
 
     private void retrieveBooks(FindIterable<Document> findIterable) {

@@ -1,5 +1,6 @@
 package se.kth.jarwalli.booksdb.model;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -27,6 +28,8 @@ public class BooksDbImplMongo implements BooksDbInterface {
     private MongoDatabase mongoDatabase;
     private ArrayList<Book> result;
 
+    private String activeUser;
+
     public BooksDbImplMongo() {
         result = new ArrayList<>();
     }
@@ -40,6 +43,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
             //mongoDatabase.runCommand(new Document("authenticate", 1).append("user", user).append("pwd", pwd));
+            activeUser= "UserKTH";
             System.out.println("Connected successfully to server.");
 
         } catch (MongoException me) {
@@ -120,8 +124,9 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public Book addBook(Book book, ArrayList<String> authors, ArrayList<Author> existingAuthorsList) throws BooksDbException {
+        ClientSession clientSession = mongoClient.startSession();
         try {
-
+            clientSession.startTransaction();
             List<Document> authorsTotal = new ArrayList<>();
             // Step 1: Create Book
             String[] tempDate = book.getPublished().split("-");
@@ -155,11 +160,15 @@ public class BooksDbImplMongo implements BooksDbInterface {
             Bson filter = Filters.eq("_id", book.getIsbn());
             Bson update = Updates.set("authors", authorsTotal);
             collection.updateOne(filter, update);
-
+            clientSession.commitTransaction();
 
 
         }catch (MongoException me){
+            clientSession.abortTransaction();
             throw new BooksDbException(me.getMessage(), me);
+        }
+        finally {
+            clientSession.close();
         }
 
         return book;
@@ -210,19 +219,21 @@ public class BooksDbImplMongo implements BooksDbInterface {
         String uri;
         try{
             MongoCollection<Document> collection = mongoDatabase.getCollection("Users");
-            FindIterable<Document> findIterable = collection.find(eq("userName", user));
+            FindIterable<Document> findIterable = collection.find(eq("_id", user));
             Document document = findIterable.first();
             if(document==null) throw new BooksDbException("User does not exist");
             String checkPwd = document.getString("pwd");
             if(!checkPwd.equals(pwd)) throw new BooksDbException("Wrong password!");
             if(document.getString("privileges").equals("admin")){
-                uri = "mongodb://Esteban:esteban@localhost:27017/Library";
+                uri = "mongodb://admin:admin123!@localhost:27017/Library";
             }
             else uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
+            activeUser = user;
+            System.out.println("Logged in as: " + user);
+
         } catch (MongoException me) {
-            System.out.println("here");
             throw new BooksDbException(me.getMessage(), me);
         }
     }

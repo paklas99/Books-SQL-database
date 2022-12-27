@@ -275,7 +275,7 @@ public class BooksDbImplSQL implements BooksDbInterface {
      * @throws BooksDbException
      */
 
-    public void login(String user, String pwd, String database) throws BooksDbException {
+    public boolean login(String user, String pwd, String database) throws BooksDbException {
         System.out.println(user + ", *********");
         String server
                 = "jdbc:mysql://localhost:3306/" + database
@@ -287,6 +287,7 @@ public class BooksDbImplSQL implements BooksDbInterface {
         } catch (SQLException | ClassNotFoundException e) {
             throw new BooksDbException(e.getMessage(), e);
         }
+        return true;
     }
 
     /**

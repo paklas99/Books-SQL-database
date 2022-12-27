@@ -33,9 +33,9 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public boolean connect(String database) throws BooksDbException {
-        //String uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
+        String uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
 
-        String uri = "mongodb://localhost:27017";
+        //String uri = "mongodb://localhost:27017";
         try {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
@@ -206,18 +206,30 @@ public class BooksDbImplMongo implements BooksDbInterface {
     }
 
     @Override
-    public void login(String user, String pwd, String database) throws BooksDbException {
-
-
-        String uri = "mongodb://" + user + ":" + pwd+ "@" + "localhost:27017/Library";
-        try {
+    public boolean login(String user, String pwd, String database) throws BooksDbException {
+        String uri;
+        try{
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Users");
+            FindIterable findIterable = collection.find(eq("userName", user));
+            System.out.println("here");
+            MongoCursor<Document> cursor = findIterable.cursor();
+            Document document = cursor.next();
+            System.out.println("efter");
+            String checkPwd = document.getString("pwd");
+            System.out.println("pwd: " + pwd + ", " + "checkpwd: "+ checkPwd);
+            if(!checkPwd.equals(pwd)) return false;
+            System.out.println("user: " + user + ", pwd: "+ checkPwd);
+            if(document.getString("privileges").equals("admin")){
+                uri = "mongodb://Esteban:esteban@localhost:27017/Library";
+            }
+            else uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
-            mongoDatabase.runCommand(new Document("authenticate", 1).append("user", user).append("pwd", pwd));
         } catch (MongoException me) {
             System.out.println("here");
             throw new BooksDbException(me.getMessage(), me);
         }
+        return true;
     }
 
     @Override
@@ -238,9 +250,10 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public String retrieveCurrentUser() throws BooksDbException {
-        Document currentUser = mongoClient.getDatabase("Library").runCommand(new Document("whatsmyuri", 1));
-        System.out.println("Current user: " + currentUser.getString("user"));
-        return currentUser.getString("user");
+        Document connectionStatus = mongoClient.getDatabase("Library").runCommand(new Document("connectionStatus", 1));
+        String authenticatedUser = connectionStatus.get("authInfo", Document.class).getString("authenticatedUsers[0].user");
+        System.out.println("Authenticated user: " + authenticatedUser);
+        return authenticatedUser.toString();
     }
 
     private void retrieveBooks(FindIterable<Document> findIterable) {

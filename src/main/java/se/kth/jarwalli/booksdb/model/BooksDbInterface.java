@@ -103,7 +103,7 @@ public interface BooksDbInterface {
      * @return returns the boolean representation if the login succeeded or not
      * @throws BooksDbException
      */
-    public void login(String user, String pwd, String database) throws BooksDbException;
+    public boolean login(String user, String pwd, String database) throws BooksDbException;
     /**
      * adds a review to a book
      * @param review The review to be added

@@ -33,9 +33,9 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public boolean connect(String database) throws BooksDbException {
-        //String uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
+        String uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
 
-        String uri = "mongodb://localhost:27017";
+        //String uri = "mongodb://localhost:27017";
         try {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
@@ -213,7 +213,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
         try {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
-            mongoDatabase.runCommand(new Document("authenticate", 1).append("user", user).append("pwd", pwd));
+            //mongoDatabase.runCommand(new Document("authenticate", 1).append("user", user).append("pwd", pwd));
         } catch (MongoException me) {
             System.out.println("here");
             throw new BooksDbException(me.getMessage(), me);

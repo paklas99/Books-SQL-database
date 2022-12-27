@@ -4,10 +4,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import com.mongodb.MongoCredential;
 import com.mongodb.client.*;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.mongodb.internal.connection.MongoCredentialWithCache;
 import org.bson.Document;
 import com.mongodb.MongoException;
 import org.bson.conversions.Bson;
@@ -30,8 +32,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
     @Override
     public boolean connect(String database) throws BooksDbException {
 
-        String uri = "mongodb://localhost:27017";
-        try {
+        String uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";        try {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
             System.out.println("Connected successfully to server.");
@@ -78,7 +79,6 @@ public class BooksDbImplMongo implements BooksDbInterface {
         try{
             result.clear();
             MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-            //FindIterable findIterable = collection.find()
             FindIterable findIterable = collection.find(Filters.elemMatch("authors", regex("fullName", searchAuthor, "i")));
             retrieveBooks(findIterable);
         }catch (MongoException me) {
@@ -204,7 +204,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
     public void login(String user, String pwd, String database) throws BooksDbException {
 
 
-        String uri = "mongodb://" + user + ":" + pwd+ "@" + "localhost:27017/";
+        String uri = "mongodb://" + user + ":" + pwd+ "@" + "localhost:27017/Library";
         try {
             System.out.println(mongoClient);
             mongoClient = MongoClients.create(uri);

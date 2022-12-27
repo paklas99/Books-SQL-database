@@ -206,19 +206,15 @@ public class BooksDbImplMongo implements BooksDbInterface {
     }
 
     @Override
-    public boolean login(String user, String pwd, String database) throws BooksDbException {
+    public void login(String user, String pwd, String database) throws BooksDbException {
         String uri;
         try{
             MongoCollection<Document> collection = mongoDatabase.getCollection("Users");
-            FindIterable findIterable = collection.find(eq("userName", user));
-            System.out.println("here");
-            MongoCursor<Document> cursor = findIterable.cursor();
-            Document document = cursor.next();
-            System.out.println("efter");
+            FindIterable<Document> findIterable = collection.find(eq("userName", user));
+            Document document = findIterable.first();
+            if(document==null) throw new BooksDbException("User does not exist");
             String checkPwd = document.getString("pwd");
-            System.out.println("pwd: " + pwd + ", " + "checkpwd: "+ checkPwd);
-            if(!checkPwd.equals(pwd)) return false;
-            System.out.println("user: " + user + ", pwd: "+ checkPwd);
+            if(!checkPwd.equals(pwd)) throw new BooksDbException("Wrong password!");
             if(document.getString("privileges").equals("admin")){
                 uri = "mongodb://Esteban:esteban@localhost:27017/Library";
             }
@@ -229,7 +225,6 @@ public class BooksDbImplMongo implements BooksDbInterface {
             System.out.println("here");
             throw new BooksDbException(me.getMessage(), me);
         }
-        return true;
     }
 
     @Override

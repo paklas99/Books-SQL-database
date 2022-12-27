@@ -215,27 +215,16 @@ public class Controller {
 
     void handleLogin(String username, String password) {
         new Thread("handleLoginThread"){
-        boolean successful;
             @Override
             public void run(){
                 try {
-                    successful = booksDb.login(username, password, "Library");
-                    if(!successful){
-                        javafx.application.Platform.runLater(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        booksView.showAlertAndWait("An error occurred and you have not been logged in", ERROR);
-
-                                    }
-                                });
-                    }
+                    booksDb.login(username, password, "Library");
                 } catch (BooksDbException e) {
                     javafx.application.Platform.runLater(
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    booksView.showAlertAndWait("An error occurred and you have not been logged in", ERROR);
+                                    booksView.showAlertAndWait("An error occurred and you have not been logged in " + e.getMessage(), ERROR);
 
                                 }
                             });

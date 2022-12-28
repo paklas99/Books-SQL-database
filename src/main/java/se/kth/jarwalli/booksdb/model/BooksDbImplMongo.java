@@ -1,24 +1,20 @@
 package se.kth.jarwalli.booksdb.model;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import com.mongodb.MongoCredential;
 import com.mongodb.client.*;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 
-import com.mongodb.internal.connection.MongoCredentialWithCache;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import com.mongodb.MongoException;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
-import static com.mongodb.client.model.Aggregates.lookup;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.regex;
 
@@ -43,7 +39,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
             //mongoDatabase.runCommand(new Document("authenticate", 1).append("user", user).append("pwd", pwd));
-            activeUser= "UserKTH";
+            activeUser = "UserKTH";
             System.out.println("Connected successfully to server.");
 
         } catch (MongoException me) {
@@ -54,30 +50,29 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public void disconnect() throws BooksDbException {
-        mongoClient.close();
+        try {
+            mongoClient.close();
+
+        } catch (MongoException me) {
+            throw new BooksDbException(me.getMessage(), me);
+        }
     }
 
     @Override
     public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException {
-        try{
-            result.clear();
-            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-            FindIterable findIterable = collection.find(regex("title", searchTitle, "i"));
-            retrieveBooks(findIterable);
-        }catch (MongoException me) {
-        throw new BooksDbException(me.getMessage(), me);
-    }
+        try {
+            retrieveBooks(regex("title", searchTitle, "i"));
+        } catch (MongoException me) {
+            throw new BooksDbException(me.getMessage(), me);
+        }
         return result;
     }
 
     @Override
     public List<Book> searchBooksByISBN(String searchIsbn) throws BooksDbException {
-        try{
-            result.clear();
-            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-            FindIterable findIterable = collection.find(regex("_id", searchIsbn, "i"));
-            retrieveBooks(findIterable);
-        }catch (MongoException me) {
+        try {
+            retrieveBooks(regex("_id", searchIsbn, "i"));
+        } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
         }
         return result;
@@ -85,12 +80,9 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public List<Book> searchBookByAuthor(String searchAuthor) throws BooksDbException {
-        try{
-            result.clear();
-            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-            FindIterable findIterable = collection.find(Filters.elemMatch("authors", regex("fullName", searchAuthor, "i")));
-            retrieveBooks(findIterable);
-        }catch (MongoException me) {
+        try {
+            retrieveBooks(Filters.elemMatch("authors", regex("fullName", searchAuthor, "i")));
+        } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
         }
         return result;
@@ -98,12 +90,9 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public List<Book> searchBookByGenre(String searchGenre) throws BooksDbException {
-        try{
-            result.clear();
-            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-            FindIterable findIterable = collection.find(regex("genre", searchGenre, "i"));
-            retrieveBooks(findIterable);
-        }catch (MongoException me) {
+        try {
+            retrieveBooks(regex("genre", searchGenre, "i"));
+        } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
         }
         return result;
@@ -111,12 +100,9 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public List<Book> searchBookByRating(int searchRating) throws BooksDbException {
-        try{
-            result.clear();
-            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-            FindIterable findIterable = collection.find(eq("rating", searchRating));
-            retrieveBooks(findIterable);
-        }catch (MongoException me) {
+        try {
+            retrieveBooks(eq("rating", searchRating));
+        } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
         }
         return result;
@@ -143,17 +129,17 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
 
             // Step 2: Create new Authors
-            for(String s : authors){
+            for (String s : authors) {
                 Document tempAuthor = new Document("fullName", s);
                 authorsTotal.add(tempAuthor);
                 authorCollection.insertOne(tempAuthor);
             }
 
             // Step 3: Add existing authors
-            for(Author a : existingAuthorsList){
+            for (Author a : existingAuthorsList) {
                 authorsTotal.add(new Document("_id", new ObjectId(a.getAuthorId())).append("fullName", a.getFullName()));
             }
-            for(Document d : authorsTotal){
+            for (Document d : authorsTotal) {
                 System.out.println("test " + d.get("_id") + d.get("fullName"));
             }
 
@@ -163,11 +149,10 @@ public class BooksDbImplMongo implements BooksDbInterface {
             clientSession.commitTransaction();
 
 
-        }catch (MongoException me){
+        } catch (MongoException me) {
             clientSession.abortTransaction();
             throw new BooksDbException(me.getMessage(), me);
-        }
-        finally {
+        } finally {
             clientSession.close();
         }
 
@@ -179,7 +164,7 @@ public class BooksDbImplMongo implements BooksDbInterface {
         try {
             MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
             collection.findOneAndDelete(eq("_id", book.getIsbn()));
-        } catch (MongoException me){
+        } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
         }
         return book;
@@ -188,14 +173,14 @@ public class BooksDbImplMongo implements BooksDbInterface {
     @Override
     public ArrayList<Author> retrieveAllAuthors() throws BooksDbException {
         ArrayList<Author> allAuthors = new ArrayList<>();
-        try{
+        try {
             MongoCollection<Document> collection = mongoDatabase.getCollection("Author");
             ArrayList<Document> documents = collection.find().into(new ArrayList<>());
-            for(Document d : documents){
+            for (Document d : documents) {
                 allAuthors.add(new Author(d.get("_id").toString(), d.getString("fullName")));
-                System.out.println( d.get("_id").toString() + d.getString("fullName"));
+                System.out.println(d.get("_id").toString() + d.getString("fullName"));
             }
-        }catch (MongoException me) {
+        } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
         }
         return (ArrayList<Author>) allAuthors.clone();
@@ -217,17 +202,16 @@ public class BooksDbImplMongo implements BooksDbInterface {
     @Override
     public void login(String user, String pwd, String database) throws BooksDbException {
         String uri;
-        try{
+        try {
             MongoCollection<Document> collection = mongoDatabase.getCollection("Users");
             FindIterable<Document> findIterable = collection.find(eq("_id", user));
             Document document = findIterable.first();
-            if(document==null) throw new BooksDbException("User does not exist");
+            if (document == null) throw new BooksDbException("User does not exist");
             String checkPwd = document.getString("pwd");
-            if(!checkPwd.equals(pwd)) throw new BooksDbException("Wrong password!");
-            if(document.getString("privileges").equals("admin")){
+            if (!checkPwd.equals(pwd)) throw new BooksDbException("Wrong password!");
+            if (document.getString("privileges").equals("admin")) {
                 uri = "mongodb://admin:admin123!@localhost:27017/Library";
-            }
-            else uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
+            } else uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
             activeUser = user;
@@ -240,14 +224,14 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public Review addReview(Review review) throws BooksDbException {
-        MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
-        try{
+        try {
+            MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
             Document reviewToAdd = new Document("user", review.getUser())
                     .append("review", review.getText());
             Document update = new Document("$push", new Document("reviews", reviewToAdd));
             Document filter = new Document("_id", review.getIsbn());
-            UpdateResult result = collection.updateOne(filter, update);
-        } catch (MongoException me){
+            collection.updateOne(filter, update);
+        } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
         }
 
@@ -255,26 +239,33 @@ public class BooksDbImplMongo implements BooksDbInterface {
     }
 
     @Override
-    public String retrieveCurrentUser() throws BooksDbException {
+    public String retrieveCurrentUser() {
         return activeUser;
     }
 
-    private void retrieveBooks(FindIterable<Document> findIterable) {
-        MongoCursor<Document> cursor = findIterable.cursor();
-        while (cursor.hasNext()) {
-            Document document = cursor.next();
-            Book tempBook;
-            result.add(tempBook = new Book(document.getString("_id"),
-                    document.getString("title"),
-                    document.getDate("datePublished").toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE),
-                    document.getString("genre"),
-                    document.getInteger("rating")));
-            List<Document> authors = (List<Document>) (document.get("authors"));
-            if(authors!=null){
-                for (Document author : authors) {
-                    tempBook.addAuthor(author.getString("fullName"));
+
+    private void retrieveBooks(Bson filter) throws MongoException {
+        result.clear();
+        MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+        FindIterable findIterable = collection.find(filter);
+
+        try (MongoCursor<Document> cursor = findIterable.cursor()) {
+            while (cursor.hasNext()) {
+                Document document = cursor.next();
+                Book tempBook;
+                result.add(tempBook = new Book(document.getString("_id"),
+                        document.getString("title"),
+                        document.getDate("datePublished").toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE),
+                        document.getString("genre"),
+                        document.getInteger("rating")));
+                List<Document> authors = (List<Document>) (document.get("authors"));
+                if (authors != null) {
+                    for (Document author : authors) {
+                        tempBook.addAuthor(author.getString("fullName"));
+                    }
                 }
             }
         }
     }
 }
+

@@ -224,16 +224,32 @@ public class BooksDbImplMongo implements BooksDbInterface {
 
     @Override
     public Review addReview(Review review) throws BooksDbException {
+        ClientSession clientSession = mongoClient.startSession();
+
         try {
+            clientSession.startTransaction();
             MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            MongoCollection<Document> reviewCollection = mongoDatabase.getCollection("Review");
+
+            // Insert new review in review collection
             Document reviewToAdd = new Document("user", review.getUser())
+                    .append("review", review.getText())
+                    .append("isbn", review.getIsbn());
+
+            reviewCollection.insertOne(reviewToAdd);
+
+            // copy review and user to book
+            Document copyToBook = new Document("user", review.getUser())
                     .append("review", review.getText());
-            Document update = new Document("$push", new Document("reviews", reviewToAdd));
+            Document update = new Document("$push", new Document("reviews", copyToBook));
             Document filter = new Document("_id", review.getIsbn());
             collection.updateOne(filter, update);
+            clientSession.commitTransaction();
         } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
-        }
+        } finally {
+        clientSession.close();
+    }
 
         return review;
     }

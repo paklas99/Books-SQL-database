@@ -17,13 +17,13 @@ import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.regex;
+import static com.mongodb.client.model.Updates.push;
 
 
 public class BooksDbImplMongo implements BooksDbInterface {
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private ArrayList<Book> result;
-
     private String activeUser;
 
     public BooksDbImplMongo() {
@@ -34,11 +34,9 @@ public class BooksDbImplMongo implements BooksDbInterface {
     public boolean connect(String database) throws BooksDbException {
         String uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
 
-        //String uri = "mongodb://localhost:27017";
         try {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
-            //mongoDatabase.runCommand(new Document("authenticate", 1).append("user", user).append("pwd", pwd));
             activeUser = "UserKTH";
             System.out.println("Connected successfully to server.");
 
@@ -241,8 +239,10 @@ public class BooksDbImplMongo implements BooksDbInterface {
             // copy review and user to book
             Document copyToBook = new Document("user", review.getUser())
                     .append("review", review.getText());
-            Document update = new Document("$push", new Document("reviews", copyToBook));
-            Document filter = new Document("_id", review.getIsbn());
+            //Document update = new Document("$push", new Document("reviews", copyToBook));
+            Bson update = push("reviews", copyToBook);
+            Bson filter = eq("_id", review.getIsbn());
+            //Document filter = new Document("_id", review.getIsbn());
             collection.updateOne(filter, update);
             clientSession.commitTransaction();
         } catch (MongoException me) {

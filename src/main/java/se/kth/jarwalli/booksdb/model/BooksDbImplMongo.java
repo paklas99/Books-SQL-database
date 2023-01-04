@@ -17,28 +17,32 @@ import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.regex;
+import static com.mongodb.client.model.Updates.push;
 
 
 public class BooksDbImplMongo implements BooksDbInterface {
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private ArrayList<Book> result;
-
     private String activeUser;
 
     public BooksDbImplMongo() {
         result = new ArrayList<>();
     }
 
+    /**
+     *
+     * @param database the database to be used
+     * @return returns the boolean equvilence if the connections was successful or not
+     * @throws BooksDbException
+     */
     @Override
     public boolean connect(String database) throws BooksDbException {
         String uri = "mongodb://UserKTH:mypassword@localhost:27017/Library";
 
-        //String uri = "mongodb://localhost:27017";
         try {
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase(database);
-            //mongoDatabase.runCommand(new Document("authenticate", 1).append("user", user).append("pwd", pwd));
             activeUser = "UserKTH";
             System.out.println("Connected successfully to server.");
 
@@ -47,6 +51,11 @@ public class BooksDbImplMongo implements BooksDbInterface {
         }
         return true;
     }
+
+    /**
+     * Disconnects from the database
+     * @throws BooksDbException
+     */
 
     @Override
     public void disconnect() throws BooksDbException {
@@ -58,6 +67,12 @@ public class BooksDbImplMongo implements BooksDbInterface {
         }
     }
 
+    /**
+     * Search for a book by its title
+     * @param searchTitle The title of a book to search for
+     * @return returns a list of all the matching books
+     * @throws BooksDbException
+     */
     @Override
     public List<Book> searchBooksByTitle(String searchTitle) throws BooksDbException {
         try {
@@ -68,6 +83,12 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return result;
     }
 
+    /**
+     * Search for a book by its isbn
+     * @param searchIsbn The isbn of a book to search for
+     * @return returns a list of all the matching books
+     * @throws BooksDbException
+     */
     @Override
     public List<Book> searchBooksByISBN(String searchIsbn) throws BooksDbException {
         try {
@@ -78,6 +99,12 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return result;
     }
 
+    /**
+     * Search for a book by its author
+     * @param searchAuthor The author of a book to search for
+     * @return returns a list of all the matching books
+     * @throws BooksDbException
+     */
     @Override
     public List<Book> searchBookByAuthor(String searchAuthor) throws BooksDbException {
         try {
@@ -88,6 +115,12 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return result;
     }
 
+    /**
+     * Search for a book by its genre
+     * @param searchGenre The genre of a book to search for
+     * @return returns a list of all the matching books
+     * @throws BooksDbException
+     */
     @Override
     public List<Book> searchBookByGenre(String searchGenre) throws BooksDbException {
         try {
@@ -98,6 +131,12 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return result;
     }
 
+    /**
+     * Search for a book by its rating
+     * @param searchRating The rating of a book to search for
+     * @return returns a list of all the matching books
+     * @throws BooksDbException
+     */
     @Override
     public List<Book> searchBookByRating(int searchRating) throws BooksDbException {
         try {
@@ -108,6 +147,14 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return result;
     }
 
+    /**
+     * Adds a book to the database
+     * @param book to be added
+     * @param authors The author(s) of the book
+     * @param existingAuthorsList A list of the authorId's of the authors
+     * @return returns the book that is added
+     * @throws BooksDbException
+     */
     @Override
     public Book addBook(Book book, ArrayList<String> authors, ArrayList<Author> existingAuthorsList) throws BooksDbException {
         ClientSession clientSession = mongoClient.startSession();
@@ -159,6 +206,12 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return book;
     }
 
+    /**
+     * Deletes a book in the database
+     * @param book to be deleted
+     * @return returns the deleted book
+     * @throws BooksDbException
+     */
     @Override
     public Book deleteBook(Book book) throws BooksDbException {
         try {
@@ -170,6 +223,11 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return book;
     }
 
+    /**
+     * Retrieves a list of all the existing authors
+     * @return returns a list of all the existing authors
+     * @throws BooksDbException
+     */
     @Override
     public ArrayList<Author> retrieveAllAuthors() throws BooksDbException {
         ArrayList<Author> allAuthors = new ArrayList<>();
@@ -186,6 +244,12 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return (ArrayList<Author>) allAuthors.clone();
     }
 
+    /**
+     * updates the rating of a book
+     * @param book Book to be updated
+     * @return returns the updated book
+     * @throws BooksDbException
+     */
     @Override
     public Book updateBook(Book book) throws BooksDbException {
         try {
@@ -199,6 +263,13 @@ public class BooksDbImplMongo implements BooksDbInterface {
         return book;
     }
 
+    /**
+     * Logs in a user
+     * @param user the user to be logged in
+     * @param pwd the password of the user
+     * @param database the database to logg into
+     * @throws BooksDbException
+     */
     @Override
     public void login(String user, String pwd, String database) throws BooksDbException {
         String uri;
@@ -222,28 +293,60 @@ public class BooksDbImplMongo implements BooksDbInterface {
         }
     }
 
+    /**
+     * Adds a review to a book
+     * @param review The review to be added
+     * @return returns the added review
+     * @throws BooksDbException
+     */
     @Override
     public Review addReview(Review review) throws BooksDbException {
+        ClientSession clientSession = mongoClient.startSession();
+
         try {
+            clientSession.startTransaction();
             MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
+            MongoCollection<Document> reviewCollection = mongoDatabase.getCollection("Review");
+
+            // Insert new review in review collection
             Document reviewToAdd = new Document("user", review.getUser())
+                    .append("review", review.getText())
+                    .append("isbn", review.getIsbn());
+
+            reviewCollection.insertOne(reviewToAdd);
+
+            // copy review and user to book
+            Document copyToBook = new Document("user", review.getUser())
                     .append("review", review.getText());
-            Document update = new Document("$push", new Document("reviews", reviewToAdd));
-            Document filter = new Document("_id", review.getIsbn());
+            //Document update = new Document("$push", new Document("reviews", copyToBook));
+            Bson update = push("reviews", copyToBook);
+            Bson filter = eq("_id", review.getIsbn());
+            //Document filter = new Document("_id", review.getIsbn());
             collection.updateOne(filter, update);
+            clientSession.commitTransaction();
         } catch (MongoException me) {
             throw new BooksDbException(me.getMessage(), me);
-        }
+        } finally {
+        clientSession.close();
+    }
 
         return review;
     }
 
+    /**
+     *
+     * @return returns the logged in user's username
+     */
     @Override
     public String retrieveCurrentUser() {
         return activeUser;
     }
 
-
+    /**
+     * Retrieves all books with a specific filter
+     * @param filter the filter to search for
+     * @throws MongoException
+     */
     private void retrieveBooks(Bson filter) throws MongoException {
         result.clear();
         MongoCollection<Document> collection = mongoDatabase.getCollection("Book");
